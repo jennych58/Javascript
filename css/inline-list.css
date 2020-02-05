@@ -1,0 +1,53 @@
+html {
+	font: normal 100%/1.5 Georgia, serif;
+}
+
+body {
+	margin: 0;
+}
+
+h1 {
+	margin: 0;
+	text-align: center;
+}
+
+.center {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	width: 50%;
+}
+
+.centerImage {
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
+}
+
+.nav {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+	text-align: center;
+}
+
+.nav li {
+	display: inline-block;
+}
+
+.nav a {
+	color: #fff;
+	display: inline-block;
+	padding: 0.5em 0.75em;
+	background-color: #666;
+	border-radius: 4px;
+	text-decoration: none;
+}
+
+.nav a:hover {
+	background-color: #000;
+}
+
+.nav .current {
+	background-color: red;
+}
