@@ -1,42 +1,41 @@
-<!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8" />
-		<title>Permits</title>
-		<script src="https://js.arcgis.com/4.4"></script>
-		<link href="css/inline-list.css" rel="stylesheet" />
-	</head>
-	<body>
-		<div class="container">
-			<img
-				src="images/banner1.jpg"
-				alt="Smiley face"
-				height="100"
-				width="800"
-				class="center"
-			/>
-			<header>
-				<nav>
-					<ul class="nav">
-						<li><a href="index.html">Home</a></li>
-						<li><a class="current" href="permits.html">Permits Tracking</a></li>
-						<li><a href="segments.html">Setments Tracking</a></li>
-						<li><a href="nfids.html">Site NFIDs Tracking</a></li>
-						<li><a href="about.html">About</a></li>
-					</ul>
-				</nav>
-			</header>
-		</div>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>ArcGIS JavaScript Tutorials: Create a Starter App</title>
+  <style>
+    html, body, #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+  
+  <link rel="stylesheet" href="https://js.arcgis.com/4.13/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.13/"></script>
+  
+  <script>  
+    require([
+      "esri/Map",
+      "esri/views/MapView",
+    ], function(Map, MapView) {
 
-		<script>
-			require(["esri/Map","esri/views/MapView"],
-				functin(Map,MapView)
-				{
-					let map1 = new Map({basemap:"topo"})
-					let mapview =  new MapView({container:"mapview",map:map1})
-				}
-				);
-		</script>
-		<div id="mapview" stype="width:500px;height:500px">map goes here</div>
-	</body>
+      var map = new Map({
+        basemap: "topo-vector"
+      });
+
+      var view = new MapView({
+        container: "viewDiv",
+        map: map,
+        center: [-118.80500,34.02700],
+        zoom: 13
+      });
+
+    });
+  </script>
+</head>
+<body>
+  <div id="viewDiv"></div>
+</body>
 </html>
