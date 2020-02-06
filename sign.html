@@ -48,6 +48,10 @@
   }
 </style>
 
+<div id="map"></div>
+<div id="auth">
+  <a href="#" id="sign-in">Sign In</a>
+</div>
 
 <script>
   var clientID = 'uoiMRafhECiH5uNE';
@@ -87,7 +91,9 @@
     e.preventDefault();
   });
 
-
+  // make a new map and basemap
+  var map = L.map('map').setView([39.36, -96.19], 4);
+  L.esri.basemapLayer('Gray').addTo(map);
 </script>
 
 </body>
