@@ -37,26 +37,84 @@
       var view = new MapView({
         container: "viewDiv",
         map: map,
-        center: [-122.349358, 47.620422],
-        zoom: 10
+        center: [-118.80543,34.02700],
+        zoom: 13
       });
       
+      //*** CHALLENGE ***//
+      var sql = "TRL_NAME like '%Canyon%'";
 
+      view.when(function(){
+        //*** ADD ***//
+        // queryFeatureLayer(view.center, 1500, "intersects")
+        queryFeatureLayerView(view.center, 1500, "intersects")
+        
+        //*** CHALLENGE ***//
+        //queryFeatureLayer(view.center, 1500, "intersects", sql)
+        //queryFeatureLayerView(view.center, 1500, "intersects", sql)
+      });
 
-  
+      view.on("click", function(event){
+        //*** ADD ***//
+        queryFeatureLayer(event.mapPoint, 1500, "intersects")
+        //queryFeatureLayerView(event.mapPoint, 1500, "intersects");
+        
+        //*** CHALLENGE ***//
+        // queryFeatureLayer(event.mapPoint, 1500, "intersects", sql)
+        queryFeatureLayerView(event.mapPoint, 1500, "intersects", sql)
+      });
 
     
       // Reference the feature layer to query
  
       var featureLayer = new FeatureLayer({
-        url: "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
+        url: "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/Trailheads_Styled/FeatureServer/0",
       });
     
-
+     // Add a graphics layer to hold features and draw data
+    
+      var graphicsLayer = new GraphicsLayer();
+      map.add(graphicsLayer);
+    
+      function addGraphics(result) {
+        graphicsLayer.removeAll();
+        result.features.forEach(function(feature){
+          var g = new Graphic({
+            geometry: feature.geometry,
+            attributes: feature.attributes,
+            symbol: {
+             type: "simple-marker",
+              color: [0,0,0],
+              outline: {
+               width: 2,
+               color: [0,255,255],
+             },
+              size: "20px"
+            },
+            popupTemplate: {
+             title: "{TRL_NAME}",
+             content: "This a {PARK_NAME} trail located in {CITY_JUR}."
+            }
+          });
+          graphicsLayer.add(g);
+        });
+      }
     
       // Server-side query
     
-  
+      function queryFeatureLayer(point, distance, spatialRelationship, sqlExpression) {
+        var query = {
+          geometry: point,
+          distance: distance,
+          spatialRelationship: spatialRelationship,
+          outFields: ["*"],
+          returnGeometry: true,
+          where: sqlExpression
+        };
+        featureLayer.queryFeatures(query).then(function(result) {
+          addGraphics(result);
+        });
+      }  
         
       // Client-side query
     
@@ -123,8 +181,7 @@
 </head>
 
 <body>
-  
-  <div class="center" id="viewDiv" style="width:500px;height:500px"></div>
+  <div id="viewDiv"></div>
 </body>
 
 </html>
