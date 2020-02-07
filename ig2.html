@@ -46,16 +46,7 @@
       ], function(Map, Graphic, MapView, esriRequest, MapLayer,FeatureLayer, Legend) {
        	Request = esriRequest;
 	generateBasemaps();
-					map = new Map({ basemap: "streets" });
-
-				let viewoptions = {
-					container: "mapview",
-					map: map,
-					center: [-122.349358, 47.620422],
-					scale: 100000
-				};
-
-				mapview = new MapView(viewoptions);      
+  
 	      
 	      
         var layer = new FeatureLayer({
