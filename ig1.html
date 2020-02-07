@@ -93,17 +93,7 @@
 					map.removeAll();
 					map.add(layer);
 
-					//wait until the layer is loaded.
-					layer.then(() => {
-						let toc = document.getElementById("toc");
-						toc.innerHTML = "";
-						let layerlist = document.createElement("ul");
-						toc.appendChild(layerlist);
-						//populate layers in list
-						//populateLayerRecursive(layer, layerlist);
 
-						mapview.goTo(layer.fullExtent);
-					});
 				}
 			});
 
