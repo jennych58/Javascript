@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>IGeometry</title>
+		<script src="https://js.arcgis.com/4.4"></script>
+		<link rel="stylesheet" href="https://js.arcgis.com/4.4/esri/css/main.css" />
+	</head>
+	<body>
+		<table align="center">
+			<tr>
+				<td valign="top">
+					<div id="toc"></div>
+				</td>
+				<td>
+					<div id="mapview" style="width:600px;height:600px;margin:0 auto;">
+						map goes here
+					</div>
+				</td>
+			</tr>
+		</table>
+
+		<div id="buttons" align="center"></div>
+
+		<script>
+			let mapview;
+			let map;
+			let layer;
+			let r;
+			let Request;
+			let selectedService;
+
+			//second commit
+			require([
+				"esri/Map",
+				"esri/views/MapView",
+				"esri/request",
+				"esri/layers/MapImageLayer",
+				"esri/widgets/Legend"
+			], function(Map, MapView, esriRequest, FeatureLayer, Legend) {
+				Request = esriRequest;
+				generateBasemaps();
+
+				layer = new FeatureLayer({
+					url:
+						"https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
+
+					outFields: ["*"]
+				});
+
+				map = new Map({
+					basemap: "streets",
+					layers: [layer]
+				});
+
+				//mapview = new MapView(viewoptions);
+				var mapview = new MapView({
+					container: "mapview",
+					map: map,
+					popup: {
+						autoOpenEnabled: false,
+						dockEnabled: true,
+						dockOptions: {
+							// dock popup at bottom-right side of view
+							buttonEnabled: false,
+							breakpoint: false,
+							position: "bottom-right"
+						}
+					}
+				});
+
+				let viewoptions = {
+					container: "mapview",
+					map: map,
+					center: [-122.200265, 47.642793],
+					zoom: 12
+				};
+
+				let legend = new Legend({ view: mapview });
+				mapview.ui.add(legend, "bottom-left");
+
+				let url =
+					//"https://sampleserver6.arcgisonline.com/arcgis/rest/services?f=json";
+					"https://arcgis.sefnco.com/arcgis/rest/services?f=json";
+				let options = { responseType: "json" };
+				//getCount(4);
+				//getCount(9);
+
+				function onChangeServiceMap() {
+					selectedService =
+						lstservices.options[lstservices.selectedIndex].textContent;
+
+					map.removeAll();
+					map.add(layer);
+
+					//wait until the layer is loaded.
+					layer.then(() => {
+						let toc = document.getElementById("toc");
+						toc.innerHTML = "";
+						let layerlist = document.createElement("ul");
+						toc.appendChild(layerlist);
+						//populate layers in list
+						//populateLayerRecursive(layer, layerlist);
+
+						mapview.goTo(layer.fullExtent);
+					});
+				}
+			});
+
+			//Populate layer subitems in the input element
+
+			//Generate list of buttons for basemaps
+			function generateBasemaps() {
+				let basemaps = [];
+
+				//"streets", "satellite", "hybrid", "terrain", "topo", "gray", "dark-gray", "oceans", "national-geographic", "osm", "dark-gray-vector", "gray-vector", "streets-vector", "topo-vector", "streets-night-vector", "streets-relief-vector", "streets-navigation-vector"
+				basemaps.push("satellite");
+				basemaps.push("topo");
+				basemaps.push("osm");
+				basemaps.push("terrain");
+				basemaps.push("dark-gray");
+				basemaps.push("national-geographic");
+				basemaps.push("streets-night-vector");
+
+				//let setBasemap = function (e) { map.basemap = e.target.id }
+				let setBasemap = (e) => (map.basemap = e.target.id);
+
+				for (let i = 0; i < basemaps.length; i++) {
+					let buttons = document.getElementById("buttons");
+					let button = document.createElement("button");
+					button.id = basemaps[i];
+					button.textContent = basemaps[i];
+
+					button.addEventListener("click", setBasemap);
+					buttons.appendChild(button);
+				}
+			}
+		</script>
+	</body>
+</html>
