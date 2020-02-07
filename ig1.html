@@ -31,7 +31,7 @@
 
 			//second commit
 			require([
-				"esri/Graphic",
+		
 				"esri/Map",
 				"esri/views/MapView",
 				"esri/request",
@@ -54,7 +54,14 @@
 					basemap: "streets",
 					layers: [layer]
 				});
+				
+				let viewoptions = {
+					container: "mapview",
+					map: map,
+					center: [-122.200265, 47.642793],
+					scale: 100000
 
+				};
 				//mapview = new MapView(viewoptions);
 				var mapview = new MapView({
 					container: "mapview",
@@ -71,13 +78,7 @@
 					}
 				});
 
-				let viewoptions = {
-					container: "mapview",
-					map: map,
-					center: [-122.200265, 47.642793],
-					scale: 100000
 
-				};
 
 				let legend = new Legend({ view: mapview });
 				mapview.ui.add(legend, "bottom-left");
