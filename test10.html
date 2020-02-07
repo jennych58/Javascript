@@ -52,7 +52,7 @@
         });
 
         var map = new Map({
-          basemap: "gray",
+          basemap: "street",
           layers: [layer]
         });
 
@@ -70,7 +70,13 @@
             }
           }
         });
-
+				let viewoptions = {
+					container: "viewDiv",
+					map: map,
+					center: [-122.349358, 47.620422],
+					scale: 100000
+				};
+        
         var legend = new Legend({
           view: view,
           layerInfos: [
