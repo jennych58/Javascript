@@ -155,6 +155,34 @@
             });
         }
       });
+			//Generate list of buttons for basemaps
+			function generateBasemaps() {
+				let basemaps = [];
+
+				//"streets", "satellite", "hybrid", "terrain", "topo", "gray", "dark-gray", "oceans", "national-geographic", "osm", "dark-gray-vector", "gray-vector", "streets-vector", "topo-vector", "streets-night-vector", "streets-relief-vector", "streets-navigation-vector"
+				basemaps.push("satellite");
+				basemaps.push("topo");
+				basemaps.push("osm");
+				basemaps.push("terrain");
+				basemaps.push("dark-gray");
+				basemaps.push("national-geographic");
+				basemaps.push("streets-night-vector");
+
+				//let setBasemap = function (e) { map.basemap = e.target.id }
+				let setBasemap = (e) => (map.basemap = e.target.id);
+
+				for (let i = 0; i < basemaps.length; i++) {
+					let buttons = document.getElementById("buttons");
+					let button = document.createElement("button");
+					button.id = basemaps[i];
+					button.textContent = basemaps[i];
+					button.addEventListener("click", setBasemap);
+					buttons.appendChild(button);
+				}
+			}	    
+	    
+	    
+	    
     </script>
   </head>
   <body>
@@ -190,7 +218,7 @@
 					<div id="toc"></div>
 				</td>
 				<td>
-					<div id="mapview" style="width:700px;height:500px">map goes here</div>
+					<div id="mapview" style="width:700px;height:500px;margin:0 auto;">map goes here</div>
 				</td>
 			</tr>
 		</table>
