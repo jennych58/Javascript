@@ -1,223 +1,130 @@
-<!DOCTYPE html>
-
 <html>
-	<head>
-		<title>IGeometry</title>
+<head>
+  <meta name="description" content="ArcGIS JavaScript Tutorials: Query a feature layer">
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>ArcGIS JavaScript Tutorials: Query a feature layer</title>
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.13/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.13/"></script>
+</head>
+
+<script>
+  require([
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/layers/FeatureLayer",
+      "esri/layers/GraphicsLayer",
+      "esri/Graphic"
+    ],
+    function(
+      Map, MapView, FeatureLayer, GraphicsLayer, Graphic
+    ) {
+
+      var map = new Map({
+        basemap: "topo-vector"
+      });
+    
+      var view = new MapView({
+        container: "viewDiv",
+        map: map,
+        center: [-122.349358, 47.620422],
+        zoom: 10
+      });
+      
+
+
+  
+
+    
+      // Reference the feature layer to query
+ 
+      var featureLayer = new FeatureLayer({
+        url: "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
+      });
+    
+
+    
+      // Server-side query
+    
+  
+        
+      // Client-side query
+    
+      function queryFeatureLayerView(point, distance, spatialRelationship, sqlExpression){ 
+        if (!map.findLayerById(featureLayer.id)) {
+          featureLayer.outFields = ["*"];
+          map.add(featureLayer,0);
+        }
+        var query = {
+          geometry: point,
+          distance: distance,
+          spatialRelationship: spatialRelationship,
+          outFields: ["*"],
+          returnGeometry: true,
+          where: sqlExpression
+        };
+        // Wait for the layerview to be ready and then query features
+        view.whenLayerView(featureLayer).then(function(featureLayerView) {
+          if (featureLayerView.updating) {
+            var handle = featureLayerView.watch("updating", function(isUpdating){
+              if (!isUpdating) {
+                featureLayerView.queryFeatures(query).then(function(result) {
+                  addGraphics(result) 
+                });
+                handle.remove();
+              }
+            });            
+          } else {
+            featureLayerView.queryFeatures(query).then(function(result) {
+              addGraphics(result);
+            });
+          }
+        });
+      } 
+    
+      // CHALLENGE: Find a feature and show pop-ups (client-side)
+    
+      // view.when(function(){
+      //   view.whenLayerView(featureLayer).then(function(featureLayerView) {
+      //     view.on("pointer-move", function(event){
+      //       view.hitTest(event).then(function(response){
+      //         // Only return features for the feature layer
+      //         var feature = response.results.filter(function (result) {
+      //          return result.graphic.layer === featureLayer;
+      //         })[0].graphic;
+      //         if (feature) {
+      //           // Show popup for new features only
+      //           if (!view.popup.features.length || view.popup.features.length && (view.popup.features[0].attributes.FID !== feature.attributes.FID)) {
+      //             view.popup.open({
+      //               title: feature.attributes.TRL_NAME,
+      //               content: "This a " + feature.attributes.PARK_NAME + " trail located in " + feature.attributes.CITY_JUR + ".",
+      //               location: feature.geometry
+      //             });
+      //           }
+      //         }
+      //       });
+      //     });
+      //   });        
+      // });
+
+    });
+    
+  </script>
+</head>
+
+<body>
+  
+  <div class="center" id="viewDiv" style="width:500px;height:500px"></div>
+</body>
 
-		<script src="https://js.arcgis.com/4.4"></script>
-
-		<link rel="stylesheet" href="https://js.arcgis.com/4.4/esri/css/main.css" />
-	</head>
-
-	<body>
-		<select id="lstservices"></select>
-
-		<table>
-			<tr>
-				<td valign="top">
-					<div id="toc"></div>
-				</td>
-
-				<td>
-					<div id="mapview" style="width:700px;height:500px">map goes here</div>
-				</td>
-			</tr>
-		</table>
-
-		<div id="buttons"></div>
-
-		<script>
-			let mapview;
-
-			let map;
-
-			let layer;
-
-			//second commit
-
-			require([
-				"esri/Map",
-
-				"esri/views/MapView",
-
-				"esri/request",
-
-				"esri/layers/MapImageLayer",
-
-				"esri/widgets/Legend"
-			], function(
-				Map,
-
-				MapView,
-
-				Request,
-
-				MapLayer,
-
-				Legend
-			) {
-				generateBasemaps();
-
-				map = new Map({ basemap: "streets" });
-
-				let viewoptions = {
-					container: "mapview",
-					map: map,
-
-					center: [-117.1616394868625, 32.7127455035969],
-					scale: 10000
-				};
-
-				mapview = new MapView(viewoptions);
-
-				let legend = new Legend({ view: mapview });
-
-				mapview.ui.add(legend, "bottom-left");
-
-				let url = "https://arcgis.sefnco.com/arcgis/rest/services?f=json";
-
-				let options = { responseType: "json" };
-
-				Request(url, options).then(populateMapServices);
-
-				//populate the drop downlist of mapservices
-
-				function populateMapServices(response) {
-					let result = response.data;
-
-					let lstservices = document.getElementById("lstservices");
-
-					//set event listener on change
-
-					lstservices.addEventListener("change", onChangeServiceMap);
-
-					for (let i = 0; i < result.services.length; i++) {
-						let option = document.createElement("option");
-
-						option.textContent = result.services[i].name;
-
-						lstservices.appendChild(option);
-
-						//alert(result.services[i].name);
-					}
-				}
-
-				function onChangeServiceMap() {
-					let selectedService =
-						lstservices.options[lstservices.selectedIndex].textContent;
-
-					//add layer
-
-					layer = new MapLayer({
-						url:
-							"https://arcgis.sefnco.com/arcgis/rest/services/" +
-							selectedService +
-							"/MapServer"
-					});
-
-					map.removeAll();
-
-					map.add(layer);
-
-					//wait until the layer is loaded.
-
-					layer.then(() => {
-						let toc = document.getElementById("toc");
-
-						toc.innerHTML = "";
-
-						let layerlist = document.createElement("ul");
-
-						toc.appendChild(layerlist);
-
-						//populate layers in list
-
-						populateLayer(layer, layerlist);
-
-						mapview.goTo(layer.fullExtent);
-					});
-				}
-			});
-
-			//Populate layer subitems in the input element
-
-			function populateLayer(thislayer, layerlist) {
-				for (let i = 0; i < thislayer.sublayers.length; i++) {
-					let sublayer = thislayer.sublayers.items[i];
-
-					let chk = document.createElement("input");
-
-					chk.type = "checkbox";
-
-					chk.value = sublayer.id;
-
-					chk.checked = sublayer.visible;
-
-					chk.addEventListener("click", function(e) {
-						let clickedlayer = thislayer.findSublayerById(
-							Number(e.target.value)
-						);
-
-						clickedlayer.visible = e.target.checked;
-					});
-
-					let lbl = document.createElement("label");
-
-					lbl.textContent = sublayer.title;
-
-					let layeritem = document.createElement("li");
-
-					layeritem.appendChild(chk);
-
-					layeritem.appendChild(lbl);
-
-					layerlist.appendChild(layeritem);
-				}
-			}
-
-			//Generate list of buttons for basemaps
-
-			function generateBasemaps() {
-				let basemaps = [];
-
-				//"streets", "satellite", "hybrid", "terrain", "topo", "gray", "dark-gray", "oceans", "national-geographic", "osm", "dark-gray-vector", "gray-vector", "streets-vector", "topo-vector", "streets-night-vector", "streets-relief-vector", "streets-navigation-vector"
-
-				basemaps.push("satellite");
-
-				basemaps.push("topo");
-
-				basemaps.push("osm");
-
-				basemaps.push("hybrid");
-
-				basemaps.push("terrain");
-
-				basemaps.push("dark-gray");
-
-				basemaps.push("national-geographic");
-
-				basemaps.push("oceans");
-
-				basemaps.push("streets-night-vector");
-
-				//let setBasemap = function (e) { map.basemap = e.target.id }
-
-				let setBasemap = (e) => (map.basemap = e.target.id);
-
-				for (let i = 0; i < basemaps.length; i++) {
-					let buttons = document.getElementById("buttons");
-
-					let button = document.createElement("button");
-
-					button.id = basemaps[i];
-
-					button.textContent = basemaps[i];
-
-					button.addEventListener("click", setBasemap);
-
-					buttons.appendChild(button);
-				}
-			}
-		</script>
-	</body>
 </html>
