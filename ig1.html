@@ -31,11 +31,14 @@
 
 			//second commit
 			require([
+				"esri/Graphic",
 				"esri/Map",
 				"esri/views/MapView",
 				"esri/request",
 				"esri/layers/MapImageLayer",
+				"esri/layers/FeatureLayer",
 				"esri/widgets/Legend"
+
 			], function(Map, MapView, esriRequest, FeatureLayer, Legend) {
 				Request = esriRequest;
 				generateBasemaps();
