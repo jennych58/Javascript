@@ -47,35 +47,15 @@
 					layers: [layer]
 				});
 
-        var view = new MapView({
-          container: "mapview",
-          map: map,
-          popup: {
-            autoOpenEnabled: false,
-            dockEnabled: true,
-            dockOptions: {
-              // dock popup at bottom-right side of view
-              buttonEnabled: false,
-              breakpoint: false,
-              position: "bottom-right"
-            }
-          }
-        });
-	let viewoptions = {
-		container: "mapview",
-		map: map,
-		center: [-122.349358, 47.620422],
-		scale: 100000
-			};
-        
-        var legend = new Legend({
-          view: view,
-          layerInfos: [
-            {
-              layer: layer
-            }
-          ]
-        });
+				let viewoptions = {
+					container: "mapview",
+					map: map,
+					center: [-117.1616394868625, 32.7127455035969],
+					scale: 10000
+				};
+
+				mapview = new MapView(viewoptions);
+
 
 
 				let legend = new Legend({ view: mapview });
