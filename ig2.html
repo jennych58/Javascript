@@ -1,86 +1,164 @@
-<!DOCTYPE html>
 <html>
-	<head>
-		<title>mytest</title>
-		<script src="https://js.arcgis.com/4.4"></script>
-		<link rel="stylesheet" href="https://js.arcgis.com/4.4/esri/css/main.css" />
-	</head>
-	<body>
-		<table align="center">
-			<tr>
-				<td valign="top">
-					<div id="toc"></div>
-				</td>
-				<td>
-					<div id="mapview" style="width:600px;height:600px;margin:0 auto;">
-						map goes here
-					</div>
-				</td>
-			</tr>
-		</table>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
 
-		<div id="buttons" align="center"></div>
+<title>Permits Tracking</title>
+<link href="css/inline-list.css" rel="stylesheet" />
+    
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.14/esri/themes/light/main.css"
+    />
+  
+    <script src="https://js.arcgis.com/4.14/"></script>
 
-		<script>
-			let mapview;
-			let map;
-			let layer;
-			let r;
-			let Request;
-			let selectedService;
+    <style>
+      html,
+      body,
+      #viewDiv {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+	align-content: center;
+      }
+      #optionsDiv {
+        background-color: white;
+        color: black;
+        padding: 6px;
+        max-width: 400px;
+	align-content: right;
+      }
+    </style>
+    <script>
+      require([
+        "esri/Map",
+        "esri/Graphic",
+        "esri/views/MapView",
+	"esri/request",
+	"esri/layers/MapImageLayer",
+        "esri/layers/FeatureLayer",
+        "esri/widgets/Legend"
+      ], function(Map, Graphic, esriRequest,MapView, FeatureLayer, Legend) {
+       	Request = esriRequest;
+	generateBasemaps();
+        var layer = new FeatureLayer({
+               url: "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
+          
+          outFields: ["*"]
+        });
 
-			//second commit
-			require([
-				"esri/Map",
-                "esri/Graphic",
-				"esri/views/MapView",
-				"esri/request",
-				"esri/layers/MapImageLayer",
-				"esri/layers/FeatureLayer",
-				"esri/widgets/Legend"
-			], function(Map, Graphic,MapView, esriRequest, FeatureLayer, Legend) {
-				Request = esriRequest;
-				generateBasemaps();
+        var map = new Map({
+          basemap: "topo-vector",
+          layers: [layer]
+        });
 
-				layer = new FeatureLayer({
-					url:
-						"https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
+        var view = new MapView({
+          container: "viewDiv",
+          map: map,
+          popup: {
+            autoOpenEnabled: false,
+            dockEnabled: true,
+            dockOptions: {
+              // dock popup at bottom-right side of view
+              buttonEnabled: false,
+              breakpoint: false,
+              position: "bottom-right"
+            }
+          }
+        });
+	let viewoptions = {
+		container: "viewDiv",
+		map: map,
+		center: [-122.349358, 47.620422],
+		scale: 100000
+			};
+        
+        var legend = new Legend({
+          view: view,
+          layerInfos: [
+            {
+              layer: layer
+            }
+          ]
+        });
 
-					outFields: ["*"]
-				});
+        view.ui.add(legend, "bottom-left");
+        view.ui.add("optionsDiv", "top-right");
 
-				map = new Map({
-					basemap: "streets",
-					layers: [layer]
-				});
+        // additional query fields initially set to null for basic query
+        var distance = null;
+        var units = null;
 
-				let viewoptions = {
-					container: "mapview",
-					map: map,
-					center: [-122.199507, 47.642715],
-					scale: 100000
-				};
+        //create graphic for mouse point click
+        var pointGraphic = new Graphic({
+          symbol: {
+            type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+            color: [0, 0, 139],
+            outline: {
+              color: [255, 255, 255],
+              width: 1.5
+            }
+          }
+        });
 
+        // when query type changes, set appropriate values
+        var queryOpts = document.getElementById("query-type");
 
-                var legend = new Legend({
-                    view: view,
-                    layerInfos: [
-                 {
-                    layer: layer
-                 }
-                ]
-                });
-				//mapview = new MapView(viewoptions);
-				mapview = new MapView(viewoptions);
+        queryOpts.addEventListener("change", function() {
+          switch (queryOpts.value) {
+            // values set for distance query
+            case "distance":
+              distance = 0.5;
+              units = "miles";
+              break;
+            default:
+              // Default set to basic query
+              distance = null;
+              units = null;
+          }
+        });
+        layer.load().then(function() {
+          // Set the view extent to the data extent
+          view.extent = layer.fullExtent;
+          layer.popupTemplate = layer.createPopupTemplate();
+        });
 
-				let legend = new Legend({ view: mapview });
-				mapview.ui.add(legend, "bottom-left");
+        view.on("click", function(event) {
+          view.graphics.remove(pointGraphic);
+          queryFeatures(event);
+        });
 
-				
-
-			//Populate layer subitems in the input element
-
-			//Generate list of buttons for basemaps
+        function queryFeatures(screenPoint) {
+          const point = view.toMap(screenPoint);
+          layer
+            .queryFeatures({
+              geometry: point,
+              // distance and units will be null if basic query selected
+              distance: distance,
+              units: units,
+              spatialRelationship: "intersects",
+              returnGeometry: false,
+              outFields: ["*"]
+            })
+            .then(function(featureSet) {
+              // set graphic location to mouse pointer and add to mapview
+              pointGraphic.geometry = point;
+              view.graphics.add(pointGraphic);
+              // open popup of query result
+              view.popup.open({
+                location: point,
+                features: featureSet.features,
+                featureMenuOpen: true
+              });
+            });
+        }
+      });
+				//Generate list of buttons for basemaps
 			function generateBasemaps() {
 				let basemaps = [];
 
@@ -105,8 +183,41 @@
 					button.addEventListener("click", setBasemap);
 					buttons.appendChild(button);
 				}
-			}
-		</script>
-	</body>
-</html>
+			}    
+	    
+    </script>
+  </head>
+  <body>
 
+		<div class="container">
+			<img
+				src="images/banner1.jpg"
+				alt="Sefnco Engineer"
+				height="100"
+				width="800"
+				class="center"
+			/>
+			<header>
+				<nav>
+					<ul class="nav">
+						<li><a href="index.html">Home</a></li>
+						<li><a class="current" href="permits.html">Permits Tracking</a></li>
+						<li><a href="segments.html">Setments Tracking</a></li>
+						<li><a href="nfids.html">Site NFIDs Tracking</a></li>
+						<li><a href="https://www.arcgis.com/home/signin.html">Login</a></li>
+					</ul>
+				</nav>
+			</header>
+		</div>
+    <div class="center" id="viewDiv" style="width:600px;height:600px;margin:0 auto;"></div>
+    <div id="optionsDiv" class="esri-widget">
+      <p>
+        Select a query type and click a point on the map to view the results.
+      </p>
+      <select id="query-type" class="esri-widget">
+        <option value="basic">Basic Query</option>
+        <option value="distance">Query By Distance</option>
+      </select>
+    </div>
+  </body>
+</html>
