@@ -68,7 +68,7 @@
       // Reference the feature layer to query
  
       var featureLayer = new FeatureLayer({
-        url: ""https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
+        url: "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/Trailheads_Styled/FeatureServer/0",
       });
     
      // Add a graphics layer to hold features and draw data
@@ -114,6 +114,77 @@
         featureLayer.queryFeatures(query).then(function(result) {
           addGraphics(result);
         });
+      }  
+        
+      // Client-side query
+    
+      function queryFeatureLayerView(point, distance, spatialRelationship, sqlExpression){ 
+        if (!map.findLayerById(featureLayer.id)) {
+          featureLayer.outFields = ["*"];
+          map.add(featureLayer,0);
+        }
+        var query = {
+          geometry: point,
+          distance: distance,
+          spatialRelationship: spatialRelationship,
+          outFields: ["*"],
+          returnGeometry: true,
+          where: sqlExpression
+        };
+        // Wait for the layerview to be ready and then query features
+        view.whenLayerView(featureLayer).then(function(featureLayerView) {
+          if (featureLayerView.updating) {
+            var handle = featureLayerView.watch("updating", function(isUpdating){
+              if (!isUpdating) {
+                featureLayerView.queryFeatures(query).then(function(result) {
+                  addGraphics(result) 
+                });
+                handle.remove();
+              }
+            });            
+          } else {
+            featureLayerView.queryFeatures(query).then(function(result) {
+              addGraphics(result);
+            });
+          }
+        });
+      } 
+    
+      // CHALLENGE: Find a feature and show pop-ups (client-side)
+    
+      // view.when(function(){
+      //   view.whenLayerView(featureLayer).then(function(featureLayerView) {
+      //     view.on("pointer-move", function(event){
+      //       view.hitTest(event).then(function(response){
+      //         // Only return features for the feature layer
+      //         var feature = response.results.filter(function (result) {
+      //          return result.graphic.layer === featureLayer;
+      //         })[0].graphic;
+      //         if (feature) {
+      //           // Show popup for new features only
+      //           if (!view.popup.features.length || view.popup.features.length && (view.popup.features[0].attributes.FID !== feature.attributes.FID)) {
+      //             view.popup.open({
+      //               title: feature.attributes.TRL_NAME,
+      //               content: "This a " + feature.attributes.PARK_NAME + " trail located in " + feature.attributes.CITY_JUR + ".",
+      //               location: feature.geometry
+      //             });
+      //           }
+      //         }
+      //       });
+      //     });
+      //   });        
+      // });
+
+    });
+    
+  </script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+</body>
+
+</html>
       }  
         
       // Client-side query
