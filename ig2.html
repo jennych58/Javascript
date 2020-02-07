@@ -1,1 +1,112 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>mytest</title>
+		<script src="https://js.arcgis.com/4.4"></script>
+		<link rel="stylesheet" href="https://js.arcgis.com/4.4/esri/css/main.css" />
+	</head>
+	<body>
+		<table align="center">
+			<tr>
+				<td valign="top">
+					<div id="toc"></div>
+				</td>
+				<td>
+					<div id="mapview" style="width:600px;height:600px;margin:0 auto;">
+						map goes here
+					</div>
+				</td>
+			</tr>
+		</table>
+
+		<div id="buttons" align="center"></div>
+
+		<script>
+			let mapview;
+			let map;
+			let layer;
+			let r;
+			let Request;
+			let selectedService;
+
+			//second commit
+			require([
+				"esri/Map",
+                "esri/Graphic",
+				"esri/views/MapView",
+				"esri/request",
+				"esri/layers/MapImageLayer",
+				"esri/layers/FeatureLayer",
+				"esri/widgets/Legend"
+			], function(Map, Graphic,MapView, esriRequest, FeatureLayer, Legend) {
+				Request = esriRequest;
+				generateBasemaps();
+
+				layer = new FeatureLayer({
+					url:
+						"https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
+
+					outFields: ["*"]
+				});
+
+				map = new Map({
+					basemap: "streets",
+					layers: [layer]
+				});
+
+				let viewoptions = {
+					container: "mapview",
+					map: map,
+					center: [-122.199507, 47.642715],
+					scale: 100000
+				};
+
+
+                var legend = new Legend({
+                    view: view,
+                    layerInfos: [
+                 {
+                    layer: layer
+                 }
+                ]
+                });
+				//mapview = new MapView(viewoptions);
+				mapview = new MapView(viewoptions);
+
+				let legend = new Legend({ view: mapview });
+				mapview.ui.add(legend, "bottom-left");
+
+				
+
+			//Populate layer subitems in the input element
+
+			//Generate list of buttons for basemaps
+			function generateBasemaps() {
+				let basemaps = [];
+
+				//"streets", "satellite", "hybrid", "terrain", "topo", "gray", "dark-gray", "oceans", "national-geographic", "osm", "dark-gray-vector", "gray-vector", "streets-vector", "topo-vector", "streets-night-vector", "streets-relief-vector", "streets-navigation-vector"
+				basemaps.push("satellite");
+				basemaps.push("topo");
+				basemaps.push("osm");
+				basemaps.push("terrain");
+				basemaps.push("dark-gray");
+				basemaps.push("national-geographic");
+				basemaps.push("streets-night-vector");
+
+				//let setBasemap = function (e) { map.basemap = e.target.id }
+				let setBasemap = (e) => (map.basemap = e.target.id);
+
+				for (let i = 0; i < basemaps.length; i++) {
+					let buttons = document.getElementById("buttons");
+					let button = document.createElement("button");
+					button.id = basemaps[i];
+					button.textContent = basemaps[i];
+
+					button.addEventListener("click", setBasemap);
+					buttons.appendChild(button);
+				}
+			}
+		</script>
+	</body>
+</html>
 
