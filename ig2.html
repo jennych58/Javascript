@@ -39,9 +39,11 @@
         "esri/Map",
         "esri/Graphic",
         "esri/views/MapView",
+	 "esri/request",
+	"esri/layers/MapImageLayer",
         "esri/layers/FeatureLayer",
         "esri/widgets/Legend"
-      ], function(Map, Graphic, MapView, FeatureLayer, Legend) {
+      ], function(Map, Graphic, MapView, esriRequest, MapLayer,FeatureLayer, Legend) {
        
         var layer = new FeatureLayer({
                url: "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
