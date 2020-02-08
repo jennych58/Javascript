@@ -43,6 +43,24 @@
         "esri/widgets/Legend"
       ], function(Map, Graphic, MapView, FeatureLayer, Legend) {
        
+	  const labelClass = {
+          // autocasts as new LabelClass()
+          symbol: {
+            type: "text", // autocasts as new TextSymbol()
+            color: "green",
+            font: {
+              // autocast as new Font()
+              family: "Playfair Display",
+              size: 12,
+              weight: "bold"
+            }
+          },
+          labelPlacement: "above-center",
+          labelExpressionInfo: {
+            expression: "$feature.Permit_FQNID"
+          }
+        };    
+	      
         var layer = new FeatureLayer({
                url: "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
 	     
@@ -84,6 +102,27 @@
             }
           ]
         });
+	 
+	//labeling
+            layers: [
+              new FeatureLayer({
+            url: "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
+                labelingInfo: [labelClass],
+                renderer: {
+                  type: "simple", // autocasts as new SimpleRenderer()
+                  symbol: {
+                    type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+                    color: "rgba(0,100,0,0.6)",
+                    size: 3,
+                    outline: {
+                      color: [0, 0, 0, 0.1],
+                      width: 0.5
+                    }
+                  }
+                }
+              })
+            ]
+	      
 
         view.ui.add(legend, "bottom-left");
         view.ui.add("optionsDiv", "top-right");
