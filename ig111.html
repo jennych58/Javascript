@@ -36,58 +36,39 @@
       }
     </style>
     <script>
-      require([
-        "esri/Map",
-        "esri/Graphic",
-        "esri/views/MapView",
-        "esri/layers/FeatureLayer",
-        "esri/widgets/Legend"
-      ], function(Map, Graphic, MapView, FeatureLayer, Legend) {
-       
-        var layer = new FeatureLayer({
-               url: "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
-          
-          outFields: ["*"]
-        });
+			require([
+				"esri/Map",
+				"esri/views/MapView",
+				"esri/layers/FeatureLayer"
+			], function(Map, MapView, FeatureLayer) {
+				var map = new Map({
+					basemap: "topo-vector"
+				});
 
-        var map = new Map({
-          basemap: "topo-vector",
-          layers: [layer]
-        });
+				var view = new MapView({
+					container: "viewDiv",
+					map: map,
+					center: [-118.80543, 34.027],
+					zoom: 13
+				});
 
-        var view = new MapView({
-          container: "viewDiv",
-          map: map,
-          popup: {
-            autoOpenEnabled: false,
-            dockEnabled: true,
-            dockOptions: {
-              // dock popup at bottom-right side of view
-              buttonEnabled: false,
-              breakpoint: false,
-              position: "bottom-right"
-            }
-          }
-        });
-	let viewoptions = {
-		container: "viewDiv",
-		map: map,
-		center: [-122.349358, 47.620422],
-		scale: 100000
-			};
-        
-        var legend = new Legend({
-          view: view,
-          layerInfos: [
-            {
-              layer: layer
-            }
-          ]
-        });
+				// Trails feature layer (lines)
+				var trailsLayer = new FeatureLayer({
+					url:
+						"https://arcgis.sefnco.com/arcgis/rest/services/jenny_test_qcheng_Segment/FeatureServer/12"
+				});
 
-        view.ui.add(legend, "bottom-left");
-        view.ui.add("optionsDiv", "top-right");
-	generateBasemaps();
+				map.add(trailsLayer, 0);
+
+				// Parks and open spaces (polygons)
+				var parksLayer = new FeatureLayer({
+					url:
+						"https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13"
+				});
+
+				map.add(parksLayer, 0);
+			});
+			generateBasemaps();
 				//generateBasemaps();
 				// additional query fields initially set to null for basic query
 				var distance = null;
