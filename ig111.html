@@ -73,13 +73,15 @@
 
 				map = new Map({
 					basemap: basemaps[],
+
 						});
 
 				//mapview = new MapView(viewoptions);
 				var mapview = new MapView({
 					container: "mapview",
 					map: map,
-
+					center: [-117.1616394868625, 32.7127455035969],
+					scale: 10000
 					popup: {
 						autoOpenEnabled: false,
 						dockEnabled: true,
