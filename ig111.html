@@ -64,7 +64,7 @@
 				Request = esriRequest;
 				generateBasemaps();
 
-				layer = new FeatureLayer({
+				var PermitsLayer = new FeatureLayer({
 					url:
 						"https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
 
@@ -72,14 +72,15 @@
 				});
 
 				map = new Map({
-					basemap: "topo",
-					layers: [layer]
-				});
+					basemap: "topo-vector",
+						});
 
 				//mapview = new MapView(viewoptions);
 				var mapview = new MapView({
 					container: "mapview",
 					map: map,
+					center: [-118.80543, 34.027],
+					zoom: 13
 					popup: {
 						autoOpenEnabled: false,
 						dockEnabled: true,
@@ -91,6 +92,7 @@
 						}
 					}
 				});
+				map.add(PermitsLayer, 0);
 				let viewoptions = {
 					container: "mapview",
 					map: map,
@@ -103,7 +105,7 @@
 					view: mapview,
 					layerInfos: [
 						{
-							layer: layer
+							layer: PermitsLayer
 						}
 					]
 				});
