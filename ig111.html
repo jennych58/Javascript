@@ -66,6 +66,16 @@
 				});
 
 				map.add(parksLayer, 0);
+				var legend = new Legend({
+         			 view: view,
+         			 layerInfos: [
+           			 {
+            			  layer: trailsLayer,parksLayer
+           			 }
+         			 ]
+        });
+
+        view.ui.add(legend, "bottom-left");
 			});
     </script>
   </head>
