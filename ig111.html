@@ -62,13 +62,12 @@
 				"esri/widgets/Legend"
 			], function(Map, MapView, esriRequest, FeatureLayer, Legend) {
 				Request = esriRequest;
-				generateBasemaps();
+				
 
 				var PermitsLayer = new FeatureLayer({
 					url:
 						"https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
 
-					outFields: ["*"]
 				});
 
 				map = new Map({
@@ -79,18 +78,9 @@
 				//mapview = new MapView(viewoptions);
 				var mapview = new MapView({
 					container: "mapview",
-					map: map,
-	
-					popup: {
-						autoOpenEnabled: false,
-						dockEnabled: true,
-						dockOptions: {
-							// dock popup at bottom-right side of view
-							buttonEnabled: false,
-							breakpoint: false,
-							position: "bottom-right"
-						}
-					}
+					map: map
+					center: [-118.80543, 34.027],
+					zoom: 13
 				});
 				map.add(PermitsLayer, 0);
 				let viewoptions = {
@@ -114,6 +104,7 @@
 				mapview.ui.add(legend, "bottom-left");
 				mapview.ui.add("optionsDiv", "top-right");
 
+				generateBasemaps();
 				// additional query fields initially set to null for basic query
 				var distance = null;
 				var units = null;
