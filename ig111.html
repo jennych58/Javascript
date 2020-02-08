@@ -87,7 +87,7 @@
 
         view.ui.add(legend, "bottom-left");
         view.ui.add("optionsDiv", "top-right");
-
+	generateBasemaps();
 				//generateBasemaps();
 				// additional query fields initially set to null for basic query
 				var distance = null;
@@ -214,7 +214,10 @@
 				}
 			}
 		</script>
+
     		<div class="center" id="viewDiv" style="width:600px;height:600px;margin:0 auto;"></div>
+		
+		<div class="center" id="buttons" style="width:600px;height:600px;margin:0 auto;"></div>
 		<div id="optionsDiv" class="esri-widget">
 			<p>
 				Select a query type and click a point on the map to view the results.
