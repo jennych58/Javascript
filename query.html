@@ -161,7 +161,7 @@
         "esri/tasks/query", "esri/tasks/QueryTask", "dojo/domReady!"
       ], function (dom, on, Query, QueryTask) {
 
-        var queryTask = new QueryTask("https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13");
+        var queryTask = new QueryTask("https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/MapServer");
 
         var query = new Query();
         query.returnGeometry = false;
@@ -221,14 +221,14 @@
 				</nav>
 			</header>
 		</div>
-	  <div class="center" id="viewDiv" style="width:600px;height:600px;margin:0 auto;"> </div>
-     Permit Status :
-    <input type="text" id="Permit_Status" value="Entity Review">
+    <div class="center" id="viewDiv" style="width:600px;height:600px;margin:0 auto;">
+       permit Status :
+    <input type="text" id="Permit_Status" value="California">
     <input id="execute" type="button" value="Get Details">
     <br />
     <br />
     <div id="info" style="padding:5px; margin:5px; background-color:#eee;">
     </div>
-
+</div>
   </body>
 </html>
