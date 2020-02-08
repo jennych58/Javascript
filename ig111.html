@@ -66,12 +66,14 @@ let layer;
 require (["esri/Map",
 		 "esri/views/MapView",
 		 "esri/request",
+	  	"esri/layers/FeatureLayer"
 		 "esri/layers/MapImageLayer",
 		 "esri/widgets/Legend"], 
 		function(Map, 
 			MapView, 
 			Request, 
 			MapLayer, 
+			FeatureLayer,
 			Legend)
 		{
 			 generateBasemaps();
@@ -114,10 +116,22 @@ require (["esri/Map",
 				let selectedService = lstservices.options[lstservices.selectedIndex].textContent;
 
 					//add layer
-				layer = new MapLayer({url: "https://arcgis.sefnco.com/arcgis/rest/services/" + selectedService + "/MapServer"})
+				var trailsLayer = new FeatureLayer({
+					url:
+						"https://arcgis.sefnco.com/arcgis/rest/services/jenny_test_qcheng_Segment/FeatureServer/12"
+				});
 
+				map.add(trailsLayer, 0);
+
+				// Parks and open spaces (polygons)
+				var parksLayer = new FeatureLayer({
+					url:
+						"https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13"
+				});
+
+				map.add(parksLayer, 0);
 				map.removeAll();
-				map.add(layer);
+				//map.add(layer);
 
 				//wait until the layer is loaded.
 				layer.then
@@ -206,38 +220,7 @@ function generateBasemaps()
 	}
 }
 
-require([
-				"esri/Map",
-				"esri/views/MapView",
-				"esri/layers/FeatureLayer"
-			], function(Map, MapView, FeatureLayer) {
-				var map = new Map({
-					basemap: "topo-vector"
-				});
 
-				var view = new MapView({
-					container: "mapview",
-					map: map,
-					center: [-122.349358, 47.620422],
-					zoom: 13
-				});
-
-				// Trails feature layer (lines)
-				var trailsLayer = new FeatureLayer({
-					url:
-						"https://arcgis.sefnco.com/arcgis/rest/services/jenny_test_qcheng_Segment/FeatureServer/12"
-				});
-
-				map.add(trailsLayer, 0);
-
-				// Parks and open spaces (polygons)
-				var parksLayer = new FeatureLayer({
-					url:
-						"https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13"
-				});
-
-				map.add(parksLayer, 0);
-			});	
 	
 	
 </script>
