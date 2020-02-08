@@ -71,12 +71,10 @@
             }
           }
         });
-	let viewoptions = {
-		container: "viewDiv",
-		map: map,
-		center: [-122.439087 , 47.248767],
-		scale: 100000
-			};
+	view.scale = 24000;    
+	view.center = [-122.439087 , 47.248767];
+	view.zoom =12; 
+
         
         var legend = new Legend({
           view: view,
