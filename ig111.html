@@ -50,7 +50,7 @@ require (["esri/Map",
 		     let legend = new Legend({view: mapview});
 		     mapview.ui.add(legend, "bottom-left");
 
-		     let url = "https://sampleserver6.arcgisonline.com/arcgis/rest/services?f=json";
+		     let url = "https://arcgis.sefnco.com/arcgis/rest/services?f=json";
 
 		     let options = {responseType: "json"};
 
@@ -79,7 +79,7 @@ require (["esri/Map",
 				let selectedService = lstservices.options[lstservices.selectedIndex].textContent;
 
 					//add layer
-				layer = new MapLayer({url: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/" + selectedService + "/MapServer"})
+				layer = new MapLayer({url: "https://arcgis.sefnco.com/arcgis/rest/services/" + selectedService + "/MapServer"})
 
 				map.removeAll();
 				map.add(layer);
