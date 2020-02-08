@@ -1,10 +1,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="initial-scale=1,maximum-scale=1,user-scalable=no"
-    />
+
 
 <title>Permits Tracking</title>
 <link href="css/inline-list.css" rel="stylesheet" />
@@ -199,9 +196,14 @@
 			</header>
 		</div>
     <div class="center" id="viewDiv" style="width:1000px;height:800px;margin:0 auto;"></div>
-	  <div id="optionsDiv" class="esri-widget">
- 
-
+  <div id="optionsDiv" class="esri-widget">
+      <p>
+        Select a query type and click a point on the map to view the results.
+      </p>
+      <select id="query-type" class="esri-widget">
+        <option value="basic">Basic Query</option>
+        <option value="distance">Query By Distance</option>
+      </select>
     </div>
  
   </body>
