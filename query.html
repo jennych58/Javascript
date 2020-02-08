@@ -155,6 +155,41 @@
             });
         }
       });
+	    
+	         require([
+        "dojo/dom", "dojo/on",
+        "esri/tasks/query", "esri/tasks/QueryTask", "dojo/domReady!"
+      ], function (dom, on, Query, QueryTask) {
+
+        var queryTask = new QueryTask("https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13");
+
+        var query = new Query();
+        query.returnGeometry = false;
+        query.outFields = [
+          "Permit_FQNID", "Permit_Name", "Permit_Number", "Segment_FQNIDs", "NFIDs",
+          "Estimated_Sumbit_Date", "Submitted_to_Mastec", "Estimated_Submission_Date", "Actual_Submission_Date"
+        ];
+
+        on(dom.byId("execute"), "click", execute);
+
+        function execute () {
+          query.text = dom.byId("Permit_Status").value;
+          queryTask.execute(query, showResults);
+        }
+
+        function showResults (results) {
+          var resultItems = [];
+          var resultCount = results.features.length;
+          for (var i = 0; i < resultCount; i++) {
+            var featureAttributes = results.features[i].attributes;
+            for (var attr in featureAttributes) {
+              resultItems.push("<b>" + attr + ":</b>  " + featureAttributes[attr] + "<br>");
+            }
+            resultItems.push("<br>");
+          }
+          dom.byId("info").innerHTML = resultItems.join("");
+        }
+      });
     </script>
   </head>
   <body>
@@ -187,6 +222,12 @@
 			</header>
 		</div>
     <div class="center" id="viewDiv" style="width:600px;height:600px;margin:0 auto;"></div>
-   
+       permit Status :
+    <input type="text" id="Permit_Status" value="California">
+    <input id="execute" type="button" value="Get Details">
+    <br />
+    <br />
+    <div id="info" style="padding:5px; margin:5px; background-color:#eee;">
+    </div>
   </body>
 </html>
