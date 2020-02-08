@@ -45,7 +45,8 @@
        
         var layer = new FeatureLayer({
                url: "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
-          
+	     
+          labelingInfo: [Permit_FQNID],
           outFields: ["*"]
         });
 
