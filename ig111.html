@@ -24,6 +24,41 @@
 <div id = 'buttons'></div>
 
 <script>
+require([
+				"esri/Map",
+				"esri/views/MapView",
+				"esri/layers/FeatureLayer"
+			], function(Map, MapView, FeatureLayer) {
+				var map = new Map({
+					basemap: "topo-vector"
+				});
+
+				var view = new MapView({
+					container: "mapview",
+					map: map,
+					center: [-122.349358, 47.620422],
+					zoom: 13
+				});
+
+				// Trails feature layer (lines)
+				var trailsLayer = new FeatureLayer({
+					url:
+						"https://arcgis.sefnco.com/arcgis/rest/services/jenny_test_qcheng_Segment/FeatureServer/12"
+				});
+
+				map.add(trailsLayer, 0);
+
+				// Parks and open spaces (polygons)
+				var parksLayer = new FeatureLayer({
+					url:
+						"https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13"
+				});
+
+				map.add(parksLayer, 0);
+			});		
+	
+	
+	
 let mapview;
 let map;
 let layer;
@@ -206,6 +241,6 @@ require([
 	
 	
 </script>
-		<div id="mapview"></div>
+	
 </body>
 </html>
