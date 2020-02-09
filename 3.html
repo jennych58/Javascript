@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=7, IE=9, IE=10">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="translucent-black">
+
+    <title>Custom Basemap Switcher</title>
+
+    <script src="http://js.arcgis.com/3.7/"></script>
+
+    <link rel="stylesheet" href="http://js.arcgis.com/3.7/js/dojo/dijit/themes/nihilo/nihilo.css">
+    <link rel="stylesheet" href="http://js.arcgis.com/3.7/js/esri/css/esri.css">
+
+    <style>
+#layerList{
+    position: absolute;
+    top: 500px;
+    right: 12px;
+    width: 300px;
+    height: 200px;
+    border: 1px solid black;
+    z-index: 2;
+    background-color: rgba(250, 250, 250,1);
+}      
+    </style>
+    <script>
+ //????,??????   
+var pFeaLyrs = new Array();
+
+function LoadMapByCount(layerCount){
+    require([  
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/layers/FeatureLayer",  
+        "esri/core/watchUtils",
+        "dojo/dom",
+        "dojo/promise/all",
+        "dojo/query",
+        "dojo/on",
+        "dojo/domReady!"  
+        ], function (Map, MapView, FeatureLayer, watchUtils, dom, all, query, on)
+        {
+            var pMap = new Map();
+
+            var pMapView = new MapView({
+                container: "viewDiv",
+                map: pMap
+            });
+
+            //????,
+            AddLayer2Map();
+             //????URL!
+            function AddLayer2Map() {
+                for (var i = 0; i < layerCount; i++) {
+                    var mainLayer = new FeatureLayer({
+                        url: "https://arcgis.sefnco.com/arcgis/rest/services/BH_FEDERAL_WAY_TO_TACOMA_MSC_POINTS/MapServer/"+i
+                    });
+                    pFeaLyrs[i]=mainLayer;
+                    pMap.add(mainLayer);
+                };
+            };
+
+            setTimeout(function() {
+                var htmlTxt="" ;
+                for (var i = 0; i < layerCount; i++) {
+                    var lyr = pFeaLyrs[i];
+                    htmlTxt += "<input id='" + lyr.id + "' name='layerList' class='listCss' type='checkbox' value='checkbox'  "+(lyr.visible ? "checked":"")+"/>"+lyr.title + "<br>";
+                }
+
+                document.getElementById("layerList").innerHTML=htmlTxt; 
+
+                on(dojo.query(".listCss"), "click", function() {
+                    var inputs = dojo.query(".listCss");
+                    alert(inputs.length);
+                    for(var i=0;i<inputs.length;i++){ 
+                        var lyr =pFeaLyrs[i];
+                        if(inputs[i].checked) lyr.visible=true;
+                        else lyr.visible=false;
+                    }
+                });     
+            }, 1000);
+        }
+    );
+};       
+    </script>
+
+</head>
+<body 
+          <div id="viewDiv"></div>
+    <div id="layerList"></div>
+    <script>
+        //???????????????,???????
+        LoadMapByCount(19);
+    </script>
+</body>
+</html>
