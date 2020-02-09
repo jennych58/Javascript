@@ -1,15 +1,9 @@
-
-
+<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-    <!-- 
-  ArcGIS API for JavaScript, https://js.arcgis.com
-  For more information about the gp_resultmapservice sample, read the original sample description at developers.arcgis.com.
-  https://developers.arcgis.com/javascript/3/jssamples/gp_resultmapservice.html  
-  -->
-  <title>Geoprocessing - Export result as map service</title>
+    <title>Geoprocessing - Export result as map service</title>
     <link rel="stylesheet" href="https://js.arcgis.com/3.31/dijit/themes/tundra/tundra.css">
     <link rel="stylesheet" href="https://js.arcgis.com/3.31/esri/css/esri.css">
     <style>
@@ -75,7 +69,7 @@
           "dijit/layout/ContentPane"],
     function(dom, array, locale, parser, registry,
              domUtils, Map, Graphic, ArcGISDynamicMapServiceLayer, FeatureLayer, Geoprocessor, Legend){
-      var gpServiceUrl= "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/Mapserver/13",
+      var gpServiceUrl= "https://sampleserver6.arcgisonline.com/arcgis/rest/services/911CallsHotspot/GPServer/911%20Calls%20Hotspot",
           legend;
       
       parser.parse();
@@ -128,27 +122,24 @@
       }      
       
       function gpJobStatus(jobinfo){
-        domUtils.show(dom.byId('Permit_Status'));
+        domUtils.show(dom.byId('status'));
         var jobstatus = '';
         switch (jobinfo.jobStatus) {
-          case 'Permit Received':
-            jobstatus = 'Perit is received';
+          case 'esriJobSubmitted':
+            jobstatus = 'Submitted...';
             break;
-          case 'Not Started':
-            jobstatus = 'Permit is not started';
+          case 'esriJobExecuting':
+            jobstatus = 'Executing...';
             break;
-          case 'Permit Submitted to MastTec':
-            jobstatus = 'Permit is not started';
-            break;
-          case 'Canceled':
-            domUtils.hide(dom.byId('Permit_Status'));
+          case 'esriJobSucceeded':
+            domUtils.hide(dom.byId('status'));
             break;
         }
-        dom.byId('Permit_Status').innerHTML = jobstatus;
+        dom.byId('status').innerHTML = jobstatus;
       }
       function gpJobFailed(error){
-        dom.byId('Permit_Status').innerHTML = error;
-        domUtils.hide(dom.byId('Permit_Status'));
+        dom.byId('status').innerHTML = error;
+        domUtils.hide(dom.byId('status'));
       }
       function buildDefinitionQuery(){
         var defQuery;
@@ -200,17 +191,17 @@
         <div style="padding-bottom:20px;width:40px">
           <label for="fromDate">From:</label>
           <br/>
-          <input type="text" name="fromDate" id="fromDate" value="2019-01-01" dojoType="dijit.form.DateTextBox"
-              required="true" constraints="{min:'2018-01-01',max:'2021-05-31'}" onChange="dijit.byId('toDate').constraints.min = arguments[0];"/>
+          <input type="text" name="fromDate" id="fromDate" value="1998-01-01" dojoType="dijit.form.DateTextBox"
+              required="true" constraints="{min:'1998-01-01',max:'1998-05-31'}" onChange="dijit.byId('toDate').constraints.min = arguments[0];"/>
           <br/>
           <label for="toDate">To:</label>
           <br/>
-          <input type="text" name="toDate" id="toDate" value="2020-02-07" dojoType="dijit.form.DateTextBox"
-              required="true" constraints="{min:'2018-01-01',max:'2021-05-31'}" />
+          <input type="text" name="toDate" id="toDate" value="1998-01-07" dojoType="dijit.form.DateTextBox"
+              required="true" constraints="{min:'1998-01-01',max:'1998-05-31'}" />
         </div>
 
         <div align="center">
-          <button  id="hotspotButton" onclick="app.findHotspot();">Analyze Search</button>
+          <button  id="hotspotButton" onclick="app.findHotspot();">Analyze 911 Calls</button>
         </div>
       </div>
       
