@@ -48,7 +48,7 @@
         var layer = new FeatureLayer({
                url: "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
           
-          outFields: ["*"]
+          outFields: ["Permit_FQNID","Permit_Name","Permit_Stauts","Estimated_Footage","Estimated_Miles","Actual_Footage"]
         });
 
         var map = new Map({
@@ -71,19 +71,7 @@
           }
         });
 	      
-      var popPermits = {
-        "title": "{Permit_FQNID}",
-        "content": "<b>Permit Name:</b> {Permit_Name}<br><b>Permit Status:</b><b>{Permit_Status}</b><b>Estimated Footage:</b> {Estimated_Footage}<br><b>Estimated Miles:</b> {Estimated_Miles}<br><b>Actual Footage:</b> {Actual_Footage} ft"
-      }
-
-      var permits = new FeatureLayer({
-        url: "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
-        outFields: ["Permit_FQNID","Permit_Name","Permit_Stauts","Estimated_Footage","Estimated_Miles","Actual_Footage"],
-        popupTemplate: popPermits
-      });
-
-      map.add(permits);	      
-	      
+     
 	      
 	 var scaleBar = new ScaleBar({
           view: view,
