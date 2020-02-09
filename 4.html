@@ -1,36 +1,49 @@
-<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
 
-<html lang="en">
+<title>Permits Tracking</title>
+<link href="css/inline-list.css" rel="stylesheet" />
+    
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.14/esri/themes/light/main.css"
+    />
+  
+    <script src="https://js.arcgis.com/4.14/"></script>
 
-<head>
-
-<meta charset="UTF-8">
-
-<title>Hello World</title> 
-
-<link rel="stylesheet"href="http://js.arcgis.com/3.9/js/dojo/dijit/themes/tundra/tundra.css"/> 
-
-<link rel="stylesheet" href="http://js.arcgis.com/3.9/js/esri/css/esri.css" />
-
-<script src="http://js.arcgis.com/3.9/"></script>
-
-<style>
-
-#mapDiv {
-
-height: 600px;
-
-width: 900px;
-
-border:1px solid red;
-
-}
-
-</style>
-
-<script>
-
-require(["esri/map",
+    <style>
+      html,
+      body,
+      #viewDiv {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+	align-content: center;
+      }
+      #optionsDiv {
+        background-color: white;
+        color: black;
+        padding: 6px;
+        max-width: 400px;
+	align-content: right;
+      }
+    </style>
+    <script>
+      require([
+        "esri/Map",
+        "esri/Graphic",
+        "esri/views/MapView",
+        "esri/layers/FeatureLayer",
+        "esri/widgets/Legend",
+        "esri/widgets/Compass",	      
+	 "esri/widgets/ScaleBar"
+   "esri/map",
 
 "esri/layers/ArcGISDynamicMapServiceLayer",
 
@@ -51,6 +64,79 @@ require(["esri/map",
 "esri/graphic",
 
 "dojo/domReady!"],
+              
+              
+              
+              function(Map, Graphic, MapView, FeatureLayer, ScaleBar,Compass,Legend) {
+        // Crime in SF
+        var layer = new FeatureLayer({
+               url: "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
+          
+          outFields: ["*"]
+        });
+
+        var map = new Map({
+          basemap: "topo-vector",
+          layers: [layer]
+        });
+
+        var view = new MapView({
+          container: "viewDiv",
+          map: map,
+          popup: {
+            autoOpenEnabled: false,
+            dockEnabled: true,
+            dockOptions: {
+              // dock popup at bottom-right side of view
+              buttonEnabled: false,
+              breakpoint: false,
+              position: "bottom-right"
+            }
+          }
+        });
+	      
+     
+	      
+	 var scaleBar = new ScaleBar({
+          view: view,
+          unit: "dual" // The scale bar displays both metric and non-metric units.
+        });
+	    
+	var compass = new Compass({
+  	view: view
+	});
+
+// adds the compass to the top left corner of the MapView
+view.ui.add(compass, "top-left")
+	      
+	let viewoptions = {
+		container: "viewDiv",
+		map: map,
+		center: [-122.439087 , 47.248767],
+	        scale: 100000
+			};
+        
+	view.scale = 8000;    
+	view.center = [-122.439087 , 47.248767];
+	view.zoom =15;
+	      
+        var legend = new Legend({
+          view: view,
+          layerInfos: [
+            {
+              layer: layer
+            }
+          ]
+        });
+	      
+        // Add the widget to the bottom left corner of the view
+        view.ui.add(scaleBar, "bottom-right");
+        // adds the compass to the top left corner of the MapView
+	view.ui.add(compass, "top-left");
+        view.ui.add(legend, "bottom-left");
+        view.ui.add("optionsDiv", "top-right");
+--
+
 
 function (Map, ArcGISDynamicMapServiceLayer,dom, on,
 
