@@ -71,6 +71,20 @@
           }
         });
 	      
+      var popPermits = {
+        "title": "{Permit_FQNID}",
+        "content": "<b>Permit Name:</b> {Permit_Name}<br><b>Permit Status:</b><b>{Permit_Status}</b><b>Estimated Footage:</b> {Estimated_Footage}<br><b>Estimated Miles:</b> {Estimated_Miles}<br><b>Actual Footage:</b> {Actual_Footage} ft"
+      }
+
+      var permits = new FeatureLayer({
+        url: "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/Trailheads_Styled/FeatureServer/0",
+        outFields: ["Permit_FQNID","Permit_Name","Permit_Stauts","Estimated_Footage","Estimated_Miles","Actual_Footage"],
+        popupTemplate: popPermits
+      });
+
+      map.add(permits);	      
+	      
+	      
 	 var scaleBar = new ScaleBar({
           view: view,
           unit: "dual" // The scale bar displays both metric and non-metric units.
