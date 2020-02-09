@@ -1,7 +1,10 @@
 <html>
   <head>
     <meta charset="utf-8" />
-
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
 
 <title>Permits Tracking</title>
 <link href="css/inline-list.css" rel="stylesheet" />
@@ -37,19 +40,15 @@
         "esri/Graphic",
         "esri/views/MapView",
         "esri/layers/FeatureLayer",
-        "esri/widgets/Legend",
-	"esri/widgets/ScaleBar"
+        "esri/widgets/Legend"
       ], function(Map, Graphic, MapView, FeatureLayer, Legend) {
-       
-	  	      
+        // Crime in SF
         var layer = new FeatureLayer({
                url: "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
-	     
-              outFields: ["*"]
-	
+          
+          outFields: ["*"]
         });
-        
-		     
+
         var map = new Map({
           basemap: "topo-vector",
           layers: [layer]
@@ -69,11 +68,17 @@
             }
           }
         });
-	view.scale = 8000;    
+	let viewoptions = {
+		container: "viewDiv",
+		map: map,
+		center: [-122.349358, 47.620422],
+		scale: 100000
+			};
+	      
+        view.scale = 8000;    
 	view.center = [-122.439087 , 47.248767];
-	view.zoom =13; 
-
-        
+	view.zoom =13;
+	      
         var legend = new Legend({
           view: view,
           layerInfos: [
@@ -81,16 +86,6 @@
               layer: layer
             }
           ]
-        });
-	 
-	var scaleBar = new ScaleBar({
-          view: view,
-          unit: "dual" // The scale bar displays both metric and non-metric units.
-        });
-
-        // Add the widget to the bottom left corner of the view
-        view.ui.add(scaleBar, {
-          position: "bottom-left"
         });
 
         view.ui.add(legend, "bottom-left");
@@ -189,14 +184,13 @@
 								onClick="MyWindow=window.open('https://www.arcgis.com/home/signin.html','MyWindow','width=600,height=300'); return false;"
 								>Login</a
 							>
-						</li>						
-						
+						</li>
 					</ul>
 				</nav>
 			</header>
 		</div>
     <div class="center" id="viewDiv" style="width:1000px;height:800px;margin:0 auto;"></div>
-  <div id="optionsDiv" class="esri-widget">
+    <div id="optionsDiv" class="esri-widget">
       <p>
         Select a query type and click a point on the map to view the results.
       </p>
@@ -205,7 +199,5 @@
         <option value="distance">Query By Distance</option>
       </select>
     </div>
- 
   </body>
 </html>
-
