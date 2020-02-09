@@ -48,7 +48,7 @@
         var layer = new FeatureLayer({
                url: "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
           
-          outFields: ["Permit_FQNID","Permit_Name","Permit_Stauts","Actual_Submission_Date","Actual_Footage","Actual_Miles","Actual_Footage"]
+          outFields: ["*"]
         });
 
         var map = new Map({
@@ -165,7 +165,7 @@ view.ui.add(compass, "top-left")
               units: units,
               spatialRelationship: "intersects",
               returnGeometry: false,
-              outFields: ["Permit_FQNID","Permit_Name","Permit_Stauts","Actual_Submission_Date","Actual_Footage","Actual_Miles","Actual_Footage"]
+              outFields: ["*"]
             })
             .then(function(featureSet) {
               // set graphic location to mouse pointer and add to mapview
