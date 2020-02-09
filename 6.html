@@ -156,7 +156,7 @@
         });
         var def = [];
         def.push("(Estimated_Submitted_Date_to_MasTec >= date '" + startDate + "' and Estimated_Submitted_Date_to_MasTec <= date '" + endDate + "')");            
-        //def.push("(Day = 'SUN' OR Day= 'SAT' OR Day = 'FRI' OR Day ='MON' OR Day='TUE' OR Day='WED' OR Day ='THU')");
+        def.push("(Pemit_Status = 'Entity Review' OR Pemit_Status= 'Permit Received' OR Pemit_Status = 'In Production' OR Pemit_Status ='Permit Submitted to Entity' OR Pemit_Status='Permit Submitted to MasTec' )");
  
         if (def.length > 1) {
             defQuery = def.join(" AND ");
