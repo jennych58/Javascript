@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Hello World</title> 
+
+<link rel="stylesheet"href="http://js.arcgis.com/3.9/js/dojo/dijit/themes/tundra/tundra.css"/> 
+
+<link rel="stylesheet" href="http://js.arcgis.com/3.9/js/esri/css/esri.css" />
+
+<script src="http://js.arcgis.com/3.9/"></script>
+
+<style>
+
+#mapDiv {
+
+height: 600px;
+
+width: 900px;
+
+border:1px solid red;
+
+}
+
+</style>
+
+<script>
+
+require(["esri/map",
+
+"esri/layers/ArcGISDynamicMapServiceLayer",
+
+"dojo/dom",
+
+"dojo/on",
+
+"esri/tasks/QueryTask",
+
+"esri/toolbars/draw",
+
+"esri/tasks/query",
+
+"esri/symbols/SimpleLineSymbol",
+
+"esri/symbols/SimpleFillSymbol",
+
+"esri/graphic",
+
+"dojo/domReady!"],
+
+function (Map, ArcGISDynamicMapServiceLayer,dom, on,
+
+QueryTask, Draw, Query,
+
+SimpleLineSymbol,SimpleFillSymbol,Graphic) {
+
+var map = new Map("mapDiv");
+
+var layer = new ArcGISDynamicMapServiceLayer("https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/Mapserver");
+
+map.addLayer(layer)
+
+
+
+var toolBar = new Draw(map);
+
+
+
+on(dom.byId("Btn"),"click",function(){
+
+
+toolBar.activate(Draw.POLYGON);
+
+})
+
+on(toolBar, "draw-complete", function (result) {
+
+
+
+var geometry=result.geometry;
+
+
+
+toolBar.deactivate();
+
+queryGraphic(geometry);
+
+});
+
+ 
+
+function queryGraphic(geometry) {
+
+
+
+var queryTask = new QueryTask("https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/Mapserver/13");
+
+
+
+var query = new Query();
+
+
+
+query.geometry = geometry;
+
+
+query.outFields = ["*"];
+
+
+
+query.outSpatialReference = map.spatialReference;
+
+
+
+query.spatialRelationship = Query.SPATIAL_REL_INTERSECTS;
+
+
+
+query.returnGeometry = true;
+
+
+
+queryTask.execute(query, showQueryResult);
+
+}
+
+ 
+
+function showQueryResult(queryResult) {
+
+
+
+var lineSymbol=new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASH, new dojo.Color([255, 0, 0]), 2);
+
+
+
+var fill=new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, lineSymbol,new dojo.Color([0,200,50]));
+
+if (queryResult.features.length == 0) {
+
+dom.byId("divShowResult").innerHTML = "query is empty！";
+
+return;
+
+}
+
+var htmls = "";
+
+if (queryResult.features.length >= 1) {
+
+htmls = htmls + "<table style=\"width: 900px\">"; 
+
+htmls = htmls + "<tr><td>Permit</td></tr>"; 
+
+for (var i = 0; i < queryResult.features.length; i++) {
+
+
+
+var graphic = queryResult.features[i];
+
+
+
+graphic.setSymbol(fill);
+
+
+
+map.graphics.add(graphic);
+
+
+
+var ptName = graphic.attributes["Permit_FQNID"];
+
+if (i % 2 == 0) 
+
+htmls = htmls + "<tr bgcolor=\"#a0b0c0\">";
+
+else
+
+htmls = htmls + "<tr bgcolor=\"#F0F0F0\">";
+
+htmls = htmls + "<td><a href=\"#\">" + ptName + "</a></td>";
+
+htmls = htmls + "</tr>";
+
+}
+
+htmls = htmls + "</table>";
+
+
+
+dom.byId("divShowResult").innerHTML = htmls;
+
+}
+
+}
+
+});
+
+ 
+
+</script>
+
+</head>
+
+<body class="tundra">
+
+<div id="mapDiv" class="MapClass"></div>
+
+<input type="button" value="Sptialquery" id="Btn"/>
+
+<div id="divShowResult"></div>
+
+</body>
+
+</html
