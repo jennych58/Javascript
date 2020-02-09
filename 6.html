@@ -159,7 +159,7 @@
         def.push("(Pemit_Status = 'Entity Review' OR Pemit_Status= 'Permit Received' OR Pemit_Status = 'In Production' OR Pemit_Status ='Permit Submitted to Entity' OR Pemit_Status='Permit Submitted to MasTec' )");
  
         if (def.length > 1) {
-            defQuery = def.join(" AND ");
+            defQuery = def.join(" OR ");
         }   
         return defQuery;
       }
