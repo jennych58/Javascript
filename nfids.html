@@ -6,7 +6,7 @@
       content="initial-scale=1,maximum-scale=1,user-scalable=no"
     />
 
-<title>NFIDs Tracking</title>
+<title>Site NFIDs Tracking</title>
 <link href="css/inline-list.css" rel="stylesheet" />
     
     <link
@@ -40,8 +40,10 @@
         "esri/Graphic",
         "esri/views/MapView",
         "esri/layers/FeatureLayer",
-        "esri/widgets/Legend"
-      ], function(Map, Graphic, MapView, FeatureLayer, Legend) {
+        "esri/widgets/Legend",
+        "esri/widgets/Compass",	      
+	 "esri/widgets/ScaleBar"
+      ], function(Map, Graphic, MapView, FeatureLayer, ScaleBar,Compass,Legend) {
         // Crime in SF
         var layer = new FeatureLayer({
                url: "https://arcgis.sefnco.com/arcgis/rest/services/jenny_test_qcheng_NFID/FeatureServer/11",
@@ -68,16 +70,31 @@
             }
           }
         });
+	      
+     
+	      
+	 var scaleBar = new ScaleBar({
+          view: view,
+          unit: "dual" // The scale bar displays both metric and non-metric units.
+        });
+	    
+	var compass = new Compass({
+  	view: view
+	});
+
+// adds the compass to the top left corner of the MapView
+view.ui.add(compass, "top-left")
+	      
 	let viewoptions = {
 		container: "viewDiv",
 		map: map,
-		center: [-122.349358, 47.620422],
-		scale: 100000
+		center: [-122.439087 , 47.248767],
+	        scale: 100000
 			};
-	      
-        view.scale = 8000;    
+        
+	view.scale = 8000;    
 	view.center = [-122.439087 , 47.248767];
-	view.zoom =20;
+	view.zoom =15;
 	      
         var legend = new Legend({
           view: view,
@@ -87,7 +104,11 @@
             }
           ]
         });
-
+	      
+        // Add the widget to the bottom left corner of the view
+        view.ui.add(scaleBar, "bottom-right");
+        // adds the compass to the top left corner of the MapView
+	view.ui.add(compass, "top-left");
         view.ui.add(legend, "bottom-left");
         view.ui.add("optionsDiv", "top-right");
 
@@ -114,8 +135,8 @@
           switch (queryOpts.value) {
             // values set for distance query
             case "distance":
-              distance = 0.5;
-              units = "miles";
+              distance = 0.3;
+              units = "FEET";
               break;
             default:
               // Default set to basic query
@@ -196,7 +217,7 @@
       </p>
       <select id="query-type" class="esri-widget">
         <option value="basic">Basic Query</option>
-        <option value="distance">Query By Distance</option>
+
       </select>
     </div>
   </body>
