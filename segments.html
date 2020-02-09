@@ -41,8 +41,9 @@
         "esri/views/MapView",
         "esri/layers/FeatureLayer",
         "esri/widgets/Legend",
+        "esri/widgets/Compass",	      
 	 "esri/widgets/ScaleBar"
-      ], function(Map, Graphic, MapView, FeatureLayer, ScaleBar,Legend) {
+      ], function(Map, Graphic, MapView, FeatureLayer, ScaleBar,Compass,Legend) {
         // Crime in SF
         var layer = new FeatureLayer({
                url: "https://arcgis.sefnco.com/arcgis/rest/services/jenny_test_qcheng_Segment/FeatureServer/12",
@@ -74,7 +75,13 @@
           view: view,
           unit: "dual" // The scale bar displays both metric and non-metric units.
         });
-	      
+	    
+	var compass = new Compass({
+  	view: view
+	});
+
+// adds the compass to the top left corner of the MapView
+view.ui.add(compass, "top-left")
 	      
 	let viewoptions = {
 		container: "viewDiv",
@@ -98,7 +105,8 @@
 	      
         // Add the widget to the bottom left corner of the view
         view.ui.add(scaleBar, "bottom-right");
-        
+        // adds the compass to the top left corner of the MapView
+	view.ui.add(compass, "top-left");
         view.ui.add(legend, "bottom-left");
         view.ui.add("optionsDiv", "top-right");
 
