@@ -39,10 +39,10 @@
         "esri/Map",
         "esri/Graphic",
         "esri/views/MapView",
-	"esri/widgets/ScaleBar",
         "esri/layers/FeatureLayer",
-        "esri/widgets/Legend"
-      ], function(Map, Graphic, MapView, FeatureLayer, ,ScaleBar,Legend) {
+        "esri/widgets/Legend",
+	 "esri/widgets/ScaleBar"
+      ], function(Map, Graphic, MapView, FeatureLayer, ScaleBar,Legend) {
         // Crime in SF
         var layer = new FeatureLayer({
                url: "https://arcgis.sefnco.com/arcgis/rest/services/jenny_test_qcheng_Segment/FeatureServer/12",
