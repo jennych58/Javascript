@@ -48,15 +48,32 @@
     </style>
     <script>
       require([
-        "esri/Map",
-        "esri/Graphic",
+	 "esri/Map",
         "esri/views/MapView",
         "esri/layers/FeatureLayer",
-        "esri/widgets/Legend",
+        "esri/layers/GraphicsLayer",
+        "esri/geometry/geometryEngine",
+        "esri/Graphic",
+	 "esri/widgets/Legend",
         "esri/widgets/Compass",	      
-	 "esri/widgets/ScaleBar"
-      ], function(Map, Graphic, MapView, FeatureLayer, ScaleBar,Compass,Legend) {
-        // Crime in SF
+	 "esri/widgets/ScaleBar",
+
+        "dojo/on",
+        "dojo/dom",
+        "dojo/dom-construct",
+        "dojo/domReady!"     
+	      
+      ], function(Map,Mapview,
+        Map, MapView,
+        FeatureLayer,
+        GraphicsLayer,
+        geometryEngine,
+        Graphic,Legend,
+	Compass,ScaleBar,
+        on, dom, domConstruct
+      ) {
+	      
+	      
         var layer = new FeatureLayer({
                url: "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
           
