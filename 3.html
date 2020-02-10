@@ -8,9 +8,7 @@
   For more information about the layers-scenelayer-edges sample, read the original sample description at developers.arcgis.com.
   https://developers.arcgis.com/javascript/latest/layers-scenelayer-edges/index.html
   -->
-
-<title>Permits Tracking</title>
-<link href="css/inline-list.css" rel="stylesheet" />
+<title>Query features from a FeatureLayer - 4.8</title>
 
   <link rel="stylesheet" href="https://js.arcgis.com/4.8/esri/css/main.css">
   <script src="https://js.arcgis.com/4.8/"></script>
@@ -23,15 +21,13 @@
       width: 100%;
       margin: 0;
       padding: 0;
-     align-content: center;
     }
 
     #infoDiv {
       background-color: white;
       color: black;
       padding: 6px;
-      width: 250px;
-   align-content: left;  
+      width: 400px;
     }
 
     #results {
@@ -141,78 +137,29 @@
   </script>
 
 </head>
+
 <body>
+  <div id="viewDiv"></div>
+  <div id="infoDiv">
+    Permit Status:
+    <select id="permit_check" name="permit[category]" hdpp="permit_category">
+<option value="">(Blanks)</option>
+<option value="Canceled">Canceled</option>
+<option value="Entity Review">Entity Review</option>
+<option value="In Deign/In Production">In Deign/In Production</option>
+<option value="In Production">In Production</option>
+<option value="Not Started">Not Started</option>
+<option value="Permit Expired">Permit Expired</option>
+<option value="Permit Extended">Permit Extended</option>
+<option value="Permit in Revision">Permit in Revision</option>
+<option value="Permit Received" selected="selected">Permit Received</option>
+<option value="Permit Submitted to Entity">Permit Submitted to Entity</option>
+<option value="Permit Submitted to MasTec">Permit Submitted to MasTec</option></select>
 
-		<div class="container">
-			<img
-				src="images/banner1.jpg"
-				alt="Sefnco Engineer"
-				height="100"
-				width="800"
-				class="center"
-			/>
-			<header>
-				<nav>
-					<ul class="nav">
-						<li><a href="index.html">Home</a></li>
-						<li><a class="current" href="permits.html">Permits Tracking</a></li>
-						<li><a href="segments.html">Setments Tracking</a></li>
-						<li><a href="nfids.html">Site NFIDs Tracking</a></li>
-						<li>
-							<a
-								href="#"
-								onClick="MyWindow=window.open('https://www.arcgis.com/home/signin.html','MyWindow','width=600,height=300'); return false;"
-								>Login</a
-							>
-						</li>
-					</ul>
-				</nav>
-			</header>
-		</div>
-	  
-		<table style="width:100%">
-  		<tr>
-    		<th></th>
-   		 <th></th> 
-    		<th></th>
- 		 </tr>
-		<tr>	
-		 <td width = "15%" valign="top"> </td>
-		 <td width = "70%" valign="top" >
-	         <div id="viewDiv" style="width:1000px;height:800px;margin:5 auto;"></div>
-				
-		</td>
-				
-		<td width = "15%" valign="top">
-		                
-				<div  id="infoDiv", align ="left">
-				Permit Status: 
-				<select  id="permit_check" name="permit[category]" hdpp="permit_category">
-				<option value="">(Blanks)</option>
-				<option value="Canceled">Canceled</option>
-				<option value="Entity Review">Entity Review</option>
-				<option value="In Deign/In Production">In Deign/In Production</option>
-				<option value="In Production">In Production</option>
-				<option value="Not Started">Not Started</option>
-				<option value="Permit Expired">Permit Expired</option>
-				<option value="Permit Extended">Permit Extended</option>
-				<option value="Permit in Revision">Permit in Revision</option>
-				<option value="Permit Received" selected="selected">Permit Received</option>
-				<option value="Permit Submitted to Entity">Permit Submitted to Entity</option>
-				<option value="Permit Submitted to MasTec">Permit Submitted to MasTec</option></select>	
-	
-  				 <button id="query-occs">Query</button>
-  				  <br>
-  				  <div id="results"></div>
- 				 </div>
- 		    </td>
-				
-	
-		   </tr>
-		</table>  
-	  
-
-
-  </body>
+    <button id="query-occs">Query</button>
+    <br>
+    <div id="results"></div>
+  </div>
+</body>
 
 </html>
