@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Permits Tracking</title>
-//<link href="css/inline-list.css" rel="stylesheet" />
+<link href="css/inline-list.css" rel="stylesheet" />
 
   <link rel="stylesheet" href="https://js.arcgis.com/4.8/esri/css/main.css">
   <script src="https://js.arcgis.com/4.8/"></script>
@@ -139,6 +139,60 @@ align-content: center;
         }
 
       });
+	  
+
+        // when query type changes, set appropriate values
+        var queryOpts = document.getElementById("query-type");
+
+        queryOpts.addEventListener("change", function() {
+          switch (queryOpts.value) {
+            // values set for distance query
+            case "distance":
+              distance = 0.3;
+              units = "FEET";
+              break;
+            default:
+              // Default set to basic query
+              distance = null;
+              units = null;
+          }
+        });
+        layer.load().then(function() {
+          // Set the view extent to the data extent
+          view.extent = layer.fullExtent;
+          layer.popupTemplate = layer.createPopupTemplate();
+        });
+
+        view.on("click", function(event) {
+          view.graphics.remove(pointGraphic);
+          queryFeatures(event);
+        });
+
+        function queryFeatures(screenPoint) {
+          const point = view.toMap(screenPoint);
+          layer
+            .queryFeatures({
+              geometry: point,
+              // distance and units will be null if basic query selected
+              distance: distance,
+              units: units,
+              spatialRelationship: "intersects",
+              returnGeometry: false,
+              outFields: ["*"]
+            })
+            .then(function(featureSet) {
+              // set graphic location to mouse pointer and add to mapview
+              pointGraphic.geometry = point;
+              view.graphics.add(pointGraphic);
+              // open popup of query result
+              view.popup.open({
+                location: point,
+                features: featureSet.features,
+                featureMenuOpen: true
+              });
+            });
+        }	  
+	  
   </script>
 
 </head>
@@ -192,12 +246,12 @@ align-content: center;
                 </div>
 		</td>
 			
-		 <td width = "70%" valign="top" align ="right">
+		 <td width = "70%" valign="top">
 	         <div id="viewDiv" style="width:1000px;height:800px;margin:2 auto;"></div>
 				
 		</td>
 				
-		<td width = "15%" valign="top" ">
+		<td width = "15%" valign="top">
 		                
 				<div  id="infoDiv" align ="right">
 				Permit Status: 
