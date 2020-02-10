@@ -48,7 +48,10 @@ align-content: center;
         "esri/layers/GraphicsLayer",
         "esri/geometry/geometryEngine",
         "esri/Graphic",
-
+        "esri/widgets/Legend",
+        "esri/widgets/Compass",	      
+	 "esri/widgets/ScaleBar",
+	    
         "dojo/on",
         "dojo/dom",
         "dojo/dom-construct",
@@ -59,7 +62,7 @@ align-content: center;
         FeatureLayer,
         GraphicsLayer,
         geometryEngine,
-        Graphic,
+        Graphic,Compass,ScaleBar,
         on, dom, domConstruct
       ) {
 
@@ -100,16 +103,40 @@ align-content: center;
               // dock popup at bottom-right side of view
               buttonEnabled: false,
               breakpoint: false,
-              position: "top-left"
+              position: "bottom-right"
             }
           }
         });
 	
      
         view.ui.add("infoDiv", "top-right");
+ 	var scaleBar = new ScaleBar({
+          view: view,
+          unit: "dual" // The scale bar displays both metric and non-metric units.
+        });
+	    
+	var compass = new Compass({
+  	view: view
+	});
 
+// adds the compass to the top left corner of the MapView
+view.ui.add(compass, "top-left")
 
-
+        var legend = new Legend({
+          view: view,
+          layerInfos: [
+            {
+              layer: layer
+            }
+          ]
+        });
+	      
+        // Add the widget to the bottom left corner of the view
+        view.ui.add(scaleBar, "bottom-right");
+        // adds the compass to the top left corner of the MapView
+	view.ui.add(compass, "top-left");
+        view.ui.add(legend, "bottom-left");
+        view.ui.add("optionsDiv", "top-right");
 
        on(queryOccs, "click", function() {
           queryOccurrences()
