@@ -233,8 +233,8 @@ view.ui.add(compass, "top-left")
 					
 				</td>
 				<td> 
-				
-				<select class="center" id="permit_check" name="permit[category]" hdpp="permit_category">
+				<div class="center" id="infoDiv">
+				<select  id="permit_check" name="permit[category]" hdpp="permit_category">
 				<option value="">(Blanks)</option>
 				<option value="Canceled">Canceled</option>
 				<option value="Entity Review">Entity Review</option>
@@ -247,7 +247,7 @@ view.ui.add(compass, "top-left")
 				<option value="Permit Received" selected="selected">Permit Received</option>
 				<option value="Permit Submitted to Entity">Permit Submitted to Entity</option>
 				<option value="Permit Submitted to MasTec">Permit Submitted to MasTec</option></select>	
-				<div id="infoDiv">
+			
  
   				  <button id="query-occs">Query Occurrences</button>
   				  <br>
@@ -259,12 +259,7 @@ view.ui.add(compass, "top-left")
 		</table>  
 	  
 
-<div id="infoDiv">
- 
-    <button id="query-occs">Query Occurrences</button>
-    <br>
-    <div id="results"></div>
-  </div>	  
+	  
 	  
     <div id="optionsDiv" class="esri-widget">
       <p>
