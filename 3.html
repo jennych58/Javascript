@@ -116,7 +116,16 @@ align-content: center;
 	// adds the compass to the top left corner of the MapView
 	view.ui.add(compass, "top-left");  
         view.ui.add("optionsDiv", "top-left");   
-	   
+let viewoptions = {
+		container: "viewDiv",
+		map: map,
+		center: [-122.439087 , 47.248767],
+	        scale: 100000
+			};
+        
+	view.scale = 8000;    
+	view.center = [-122.439087 , 47.248767];
+	view.zoom =15;	   
 	   
    //query_permit_status
        on(queryOccs, "click", function() {
