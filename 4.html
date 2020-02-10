@@ -1,305 +1,168 @@
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="initial-scale=1,maximum-scale=1,user-scalable=no"
-    />
 
-<title>Permits Tracking</title>
-<link href="css/inline-list.css" rel="stylesheet" />
-    
-    <link
-      rel="stylesheet"
-      href="https://js.arcgis.com/4.14/esri/themes/light/main.css"
-    />
-  
-    <script src="https://js.arcgis.com/4.14/"></script>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <!--
+  ArcGIS API for JavaScript, https://js.arcgis.com
+  For more information about the layers-scenelayer-edges sample, read the original sample description at developers.arcgis.com.
+  https://developers.arcgis.com/javascript/latest/layers-scenelayer-edges/index.html
+  -->
+<title>Query features from a FeatureLayer - 4.8</title>
 
-    <style>
-      html,
-      body,
-      #viewDiv {
-        height: 100%;
-        width: 100%;
-        margin: 0;
-        padding: 0;
-	align-content: center;
-      }
-      #optionsDiv {
-        background-color: white;
-        color: black;
-        padding: 6px;
-        max-width: 400px;
-	align-content: right;
-      }
-    </style>
-    <script>
-      require([
+  <link rel="stylesheet" href="https://js.arcgis.com/4.8/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.8/"></script>
+
+  <style>
+    html,
+    body,
+    #viewDiv {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    #infoDiv {
+      background-color: white;
+      color: black;
+      padding: 6px;
+      width: 400px;
+    }
+
+    #results {
+      font-weight: bolder;
+    }
+  </style>
+
+  <script>
+    require([
         "esri/Map",
-        "esri/Graphic",
         "esri/views/MapView",
         "esri/layers/FeatureLayer",
-        "esri/widgets/Legend",
-        "esri/widgets/Compass",	      
-	 "esri/widgets/ScaleBar"
-   "esri/map",
+        "esri/layers/GraphicsLayer",
+        "esri/geometry/geometryEngine",
+        "esri/Graphic",
 
-"esri/layers/ArcGISDynamicMapServiceLayer",
+        "dojo/on",
+        "dojo/dom",
+        "dojo/dom-construct",
+        "dojo/domReady!"
+      ],
+      function(
+        Map, MapView,
+        FeatureLayer,
+        GraphicsLayer,
+        geometryEngine,
+        Graphic,
+        on, dom, domConstruct
+      ) {
 
-"dojo/dom",
+        var occsUrl =
+          "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13";
 
-"dojo/on",
 
-"esri/tasks/QueryTask",
+        var queryOccs = dom.byId("query-occs");
 
-"esri/toolbars/draw",
+ 
 
-"esri/tasks/query",
-
-"esri/symbols/SimpleLineSymbol",
-
-"esri/symbols/SimpleFillSymbol",
-
-"esri/graphic",
-
-"dojo/domReady!"],
-              
-              
-              
-              function(Map, Graphic, MapView, FeatureLayer, ScaleBar,Compass,Legend) {
-        // Crime in SF
-        var layer = new FeatureLayer({
-               url: "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
-          
-          outFields: ["*"]
+        // occurrences
+        var occsLayer = new FeatureLayer({
+          url: occsUrl,
+          outFields: ["*"],
+          visible: true
         });
+
+        // GraphicsLayer for displaying results
+        var resultsLayer = new GraphicsLayer();
 
         var map = new Map({
           basemap: "topo-vector",
-          layers: [layer]
+          //layers: [wellsLayer, quakesLayer, resultsLayer]
+          layers: [occsLayer,resultsLayer]
         });
 
         var view = new MapView({
           container: "viewDiv",
           map: map,
-          popup: {
-            autoOpenEnabled: false,
-            dockEnabled: true,
-            dockOptions: {
-              // dock popup at bottom-right side of view
-              buttonEnabled: false,
-              breakpoint: false,
-              position: "bottom-right"
-            }
-          }
+    zoom: 13,
+    center:  [-122.439087 , 47.248767]
         });
-	      
-     
-	      
-	 var scaleBar = new ScaleBar({
-          view: view,
-          unit: "dual" // The scale bar displays both metric and non-metric units.
+        view.ui.add("infoDiv", "top-right");
+
+
+
+
+       on(queryOccs, "click", function() {
+          queryOccurrences()
+            .then(displayResults);
         });
-	    
-	var compass = new Compass({
-  	view: view
-	});
 
-// adds the compass to the top left corner of the MapView
-view.ui.add(compass, "top-left")
-	      
-	let viewoptions = {
-		container: "viewDiv",
-		map: map,
-		center: [-122.439087 , 47.248767],
-	        scale: 100000
-			};
-        
-	view.scale = 8000;    
-	view.center = [-122.439087 , 47.248767];
-	view.zoom =15;
-	      
-        var legend = new Legend({
-          view: view,
-          layerInfos: [
-            {
-              layer: layer
-            }
-          ]
-        });
-	      
-        // Add the widget to the bottom left corner of the view
-        view.ui.add(scaleBar, "bottom-right");
-        // adds the compass to the top left corner of the MapView
-	view.ui.add(compass, "top-left");
-        view.ui.add(legend, "bottom-left");
-        view.ui.add("optionsDiv", "top-right");
---
-
-
-function (Map, ArcGISDynamicMapServiceLayer,dom, on,
-
-QueryTask, Draw, Query,
-
-SimpleLineSymbol,SimpleFillSymbol,Graphic) {
-
-var map = new Map("mapDiv");
-
-var layer = new ArcGISDynamicMapServiceLayer("https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/Mapserver");
-
-map.addLayer(layer)
-
-
-
-var toolBar = new Draw(map);
-
-
-
-on(dom.byId("Btn"),"click",function(){
-
-
-toolBar.activate(Draw.POLYGON);
-
-})
-
-on(toolBar, "draw-complete", function (result) {
-
-
-
-var geometry=result.geometry;
-
-
-
-toolBar.deactivate();
-
-queryGraphic(geometry);
-
-});
-
- 
-
-function queryGraphic(geometry) {
-
-
-
-var queryTask = new QueryTask("https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/Mapserver/13");
-
-
-
-var query = new Query();
-
-
-
-query.geometry = geometry;
-
-
-query.outFields = ["*"];
-
-
-
-query.outSpatialReference = map.spatialReference;
-
-
-
-query.spatialRelationship = Query.SPATIAL_REL_INTERSECTS;
-
-
-
-query.returnGeometry = true;
-
-
-
-queryTask.execute(query, showQueryResult);
-
-}
-
- 
-
-function showQueryResult(queryResult) {
-
-
-
-var lineSymbol=new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASH, new dojo.Color([255, 0, 0]), 2);
-
-
-
-var fill=new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, lineSymbol,new dojo.Color([0,200,50]));
-
-if (queryResult.features.length == 0) {
-
-dom.byId("divShowResult").innerHTML = "query is empty！";
-
-return;
-
-}
-
-var htmls = "";
-
-if (queryResult.features.length >= 1) {
-
-htmls = htmls + "<table style=\"width: 900px\">"; 
-
-htmls = htmls + "<tr><td>Permit</td></tr>"; 
-
-for (var i = 0; i < queryResult.features.length; i++) {
-
-
-
-var graphic = queryResult.features[i];
-
-
-
-graphic.setSymbol(fill);
-
-
-
-map.graphics.add(graphic);
-
-
-
-var ptName = graphic.attributes["Permit_FQNID"];
-
-if (i % 2 == 0) 
-
-htmls = htmls + "<tr bgcolor=\"#a0b0c0\">";
-
-else
-
-htmls = htmls + "<tr bgcolor=\"#F0F0F0\">";
-
-htmls = htmls + "<td><a href=\"#\">" + ptName + "</a></td>";
-
-htmls = htmls + "</tr>";
-
-}
-
-htmls = htmls + "</table>";
-
-
-
-dom.byId("divShowResult").innerHTML = htmls;
-
-}
-
-}
-
-});
-
- 
-
-</script>
+        function queryOccurrences() {
+          var query = occsLayer.createQuery();
+          var e = document.getElementById("permit_check").value;  
+        //   query.returnGeometry = true;
+  //query.outFields = ["*"];
+         query.where = "permit_status = '" + e + "'"; 
+         query.outSpatialReference = view.spatialReference;
+         // query.geometry = wellBuffer;
+        //  query.spatialRelationship = "intersects";
+
+          return occsLayer.queryFeatures(query);
+        }
+
+        // display the query results in the
+        // view and print the number of results to the DOM
+        function displayResults(results) {
+          
+          console.log(results);
+
+          resultsLayer.removeAll();
+          var features = results.features.map(function(graphic) {
+            graphic.symbol = {
+              type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+              style: "diamond",
+              size: 6.5,
+              color: "darkorange"
+            };
+            return graphic;
+          });
+          var numOccs = features.length;
+          dom.byId("results").innerHTML = numOccs + " occurrences found";
+          console.log(features);
+          resultsLayer.addMany(features);
+        }
+
+      });
+  </script>
 
 </head>
 
-<body class="tundra">
+<body>
+  <div id="viewDiv"></div>
+ 
 
-<div id="mapDiv" class="MapClass"></div>
 
-<input type="button" value="Sptialquery" id="Btn"/>
-
-<div id="divShowResult"></div>
-
+     
+    
+ <div id="infoDiv">
+ <select id="permit_check" name="permit[category]" hdpp="permit_category">
+<option value="">(Blanks)</option>
+<option value="Canceled">Canceled</option>
+<option value="Entity Review">Entity Review</option>
+<option value="In Deign/In Production">In Deign/In Production</option>
+<option value="In Production">In Production</option>
+<option value="Not Started">Not Started</option>
+<option value="Permit Expired">Permit Expired</option>
+<option value="Permit Extended">Permit Extended</option>
+<option value="Permit in Revision">Permit in Revision</option>
+<option value="Permit Received" selected="selected">Permit Received</option>
+<option value="Permit Submitted to Entity">Permit Submitted to Entity</option>
+<option value="Permit Submitted to MasTec">Permit Submitted to MasTec</option></select>
+    <button id="query-occs">Query Occurrences</button>
+    <br>
+    <div id="results"></div>
+  </div>
 </body>
 
 </html>
