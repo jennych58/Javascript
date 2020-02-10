@@ -57,6 +57,25 @@
         on, dom, domConstruct
       ) {
 
+	  const labelClass = {
+          // autocasts as new LabelClass()
+          symbol: {
+            type: "text", // autocasts as new TextSymbol()
+            color: "green",
+            font: {
+              // autocast as new Font()
+              family: "Playfair Display",
+              size: 12,
+              weight: "bold"
+            }
+          },
+		  
+          labelPlacement: "above-center",
+          labelExpressionInfo: {
+            expression: "$feature.FQN_ID"
+          }
+        }  
+	   
         var occsUrl =
           "https://arcgis.sefnco.com/arcgis/rest/services/jenny_test_qcheng_Segment/FeatureServer/12";
         
@@ -71,6 +90,7 @@
         var occsLayer = new FeatureLayer({
           url: occsUrl,
           outFields: ["*"],
+	  labelingInfo: [labelClass],
 	  popupTemplate: popupSeg,
           visible: true
         });
