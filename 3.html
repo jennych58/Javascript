@@ -84,7 +84,9 @@ align-content: center;
           //layers: [wellsLayer, quakesLayer, resultsLayer]
           layers: [layer,resultsLayer]
         });
-
+   
+	map.add(layer);
+	   
         var view = new MapView({
           container: "viewDiv",
           map: map,
@@ -92,12 +94,14 @@ align-content: center;
        center:  [-122.439087 , 47.248767]
         });
         view.ui.add("infoDiv", "top-right");
+	   
+
 
         var legend = new Legend({
           view: view,
           layerInfos: [
             {
-              layer: layer
+              layer: layer, resultlayer
             }
           ]
         });
@@ -116,12 +120,7 @@ align-content: center;
 	// adds the compass to the top left corner of the MapView
 	view.ui.add(compass, "top-left");  
         view.ui.add("optionsDiv", "top-left");   
-let viewoptions = {
-		container: "viewDiv",
-		map: map,
-		center: [-122.439087 , 47.248767],
-	        scale: 100000
-			};
+
         
 	view.scale = 8000;    
 	view.center = [-122.439087 , 47.248767];
