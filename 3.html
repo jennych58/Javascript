@@ -39,7 +39,7 @@
         "esri/layers/GraphicsLayer",
         "esri/geometry/geometryEngine",
         "esri/Graphic",
-
+        "esri/widgets/Legend",
         "dojo/on",
         "dojo/dom",
         "dojo/dom-construct",
@@ -86,8 +86,15 @@
         });
         view.ui.add("infoDiv", "top-right");
 
-
-
+        var legend = new Legend({
+          view: view,
+          layerInfos: [
+            {
+              layer: layer
+            }
+          ]
+        });
+      view.ui.add(legend, "bottom-left");
 
        on(queryOccs, "click", function() {
           queryOccurrences()
