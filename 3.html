@@ -150,6 +150,76 @@
           resultsLayer.addMany(features);
         }
 
+// additional query fields initially set to null for basic query
+        var distance = null;
+        var units = null;
+
+        //create graphic for mouse point click
+        var pointGraphic = new Graphic({
+          symbol: {
+            type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+            color: [0, 0, 139],
+            outline: {
+              color: [255, 255, 255],
+              width: 1.5
+            }
+          }
+        });
+
+        // when query type changes, set appropriate values
+        var queryOpts = document.getElementById("query-type");
+
+        queryOpts.addEventListener("change", function() {
+          switch (queryOpts.value) {
+            // values set for distance query
+            case "distance":
+              distance = 0.3;
+              units = "FEET";
+              break;
+            default:
+              // Default set to basic query
+              distance = null;
+              units = null;
+          }
+        });
+        layer.load().then(function() {
+          // Set the view extent to the data extent
+          view.extent = layer.fullExtent;
+          layer.popupTemplate = layer.createPopupTemplate();
+        });
+
+        view.on("click", function(event) {
+          view.graphics.remove(pointGraphic);
+          queryFeatures(event);
+        });
+
+        function queryFeatures(screenPoint) {
+          const point = view.toMap(screenPoint);
+          layer
+            .queryFeatures({
+              geometry: point,
+              // distance and units will be null if basic query selected
+              distance: distance,
+              units: units,
+              spatialRelationship: "intersects",
+              returnGeometry: false,
+              outFields: ["*"]
+            })
+            .then(function(featureSet) {
+              // set graphic location to mouse pointer and add to mapview
+              pointGraphic.geometry = point;
+              view.graphics.add(pointGraphic);
+              // open popup of query result
+              view.popup.open({
+                location: point,
+                features: featureSet.features,
+                featureMenuOpen: true
+              });
+            });
+        }	   
+	   
+	   
+	   
       });
   </script>
 	  
