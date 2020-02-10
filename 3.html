@@ -40,6 +40,8 @@
         "esri/geometry/geometryEngine",
         "esri/Graphic",
         "esri/widgets/Legend",
+	 "esri/widgets/Compass",	      
+	 "esri/widgets/ScaleBar",
         "dojo/on",
         "dojo/dom",
         "dojo/dom-construct",
@@ -95,6 +97,21 @@
           ]
         });
       view.ui.add(legend, "bottom-right");
+	   
+	      
+	 var scaleBar = new ScaleBar({
+          view: view,
+          unit: "dual" // The scale bar displays both metric and non-metric units.
+        });
+       // Add the widget to the bottom left corner of the view
+        view.ui.add(scaleBar, "bottom-left");    
+	   
+	var compass = new Compass({
+  	view: view
+	});
+	// adds the compass to the top left corner of the MapView
+	view.ui.add(compass, "top-left");  
+	   
 
        on(queryOccs, "click", function() {
           queryOccurrences()
