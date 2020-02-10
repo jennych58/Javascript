@@ -91,7 +91,20 @@ align-content: center;
           container: "viewDiv",
           map: map,
           zoom: 13,
-          center:  [-122.439087 , 47.248767]
+          center:  [-122.439087 , 47.248767],
+
+          popup: {
+            autoOpenEnabled: false,
+            dockEnabled: true,
+            dockOptions: {
+              // dock popup at bottom-right side of view
+              buttonEnabled: false,
+              breakpoint: false,
+              position: "bottom-right"
+            }
+          }
+        });
+	
         });
         view.ui.add("infoDiv", "top-right");
 
