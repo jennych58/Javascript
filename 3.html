@@ -70,7 +70,7 @@ align-content: center;
         var queryOccs = dom.byId("query-occs");
 
         // occurrences
-        var occsLayer = new FeatureLayer({
+        var layer = new FeatureLayer({
           url: occsUrl,
           outFields: ["*"],
           visible: true
@@ -82,7 +82,7 @@ align-content: center;
         var map = new Map({
           basemap: "topo-vector",
           //layers: [wellsLayer, quakesLayer, resultsLayer]
-          layers: [occsLayer,resultsLayer]
+          layers: [layer,resultsLayer]
         });
 
         var view = new MapView({
@@ -97,7 +97,7 @@ align-content: center;
           view: view,
           layerInfos: [
             {
-              layer: occsLayer
+              layer: layer
             }
           ]
         });
@@ -125,7 +125,7 @@ align-content: center;
         });
 
         function queryOccurrences() {
-          var query = occsLayer.createQuery();
+          var query = layer.createQuery();
           var e = document.getElementById("permit_check").value;  
         //   query.returnGeometry = true;
   //query.outFields = ["*"];
@@ -134,7 +134,7 @@ align-content: center;
          // query.geometry = wellBuffer;
         //  query.spatialRelationship = "intersects";
 
-          return occsLayer.queryFeatures(query);
+          return layer.queryFeatures(query);
         }
 
         // display the query results in the
@@ -191,10 +191,10 @@ align-content: center;
               units = null;
           }
         });
-        occsLayer.load().then(function() {
+        layer.load().then(function() {
           // Set the view extent to the data extent
-          view.extent = occsLayer.fullExtent;
-          occsLayer.popupTemplate = occsLayer.createPopupTemplate();
+          view.extent = layer.fullExtent;
+          layer.popupTemplate = layer.createPopupTemplate();
         });
 
         view.on("click", function(event) {
@@ -204,7 +204,7 @@ align-content: center;
 
         function queryFeatures(screenPoint) {
           const point = view.toMap(screenPoint);
-          occsLayer
+          layer
             .queryFeatures({
               geometry: point,
               // distance and units will be null if basic query selected
