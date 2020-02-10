@@ -223,10 +223,21 @@ view.ui.add(compass, "top-left")
 			</header>
 		</div>
 	  
-		<table align="center">
-			<tr>
-				<td valign="top">
-					<div id="toc"></div>
+		<table style="width:100%">
+  		<tr>
+    		<th>Chart</th>
+   		 <th>Map</th> 
+    		<th>Query</th>
+ 		 </tr>
+		<tr>	
+		 <td> ee</td>
+		 <td valign="top" >
+	         <div class="center" id="viewDiv" style="width:1000px;height:800px;margin:2 auto;"></div>
+				
+		</td>
+				
+		<td>
+		<div id="toc"></div>
 				<div  id="infoDiv">
 				<select  id="permit_check" name="permit[category]" hdpp="permit_category">
 				<option value="">(Blanks)</option>
@@ -247,16 +258,10 @@ view.ui.add(compass, "top-left")
   				  <br>
   				  <div id="results"></div>
  				 </div>
- 				</td>
-				<td>
-			    <div class="center" id="viewDiv" style="width:1000px;height:800px;margin:2 auto;"></div>
-						
-					
-				</td>
+ 		    </td>
 				
-				
-				</td>
-			</tr>
+	
+		   </tr>
 		</table>  
 	  
 
