@@ -63,7 +63,7 @@
         
 	 var popupPermit = {
         "title": "Permit Information:",
-        "content": "<b>Permit_FQNID:</b> {Permit_FQNID}<br><b>Permit_Name:</b>{Permit_Name}<b>Permt_Status:</b>{Permit_Status}<br><b>Segment_FQNIDs:</b>{Segment_FQNIDs}<br><b>Site Span NFIDs:</b>{NFIDs}<br><b>Site Span NFIDs:</b>{NFIDs}<br><b>Actual Footage:</b>{Actual_Footage}<br><b>Estimated Submitted Date to MasTec:</b>{Estimated_Sumbit_Date}<br><b>Submitted to Mastec:</b>{Submitted_to_Mastec}"
+        "content": "<b>Permit_FQNID:</b> {Permit_FQNID}<br><b>Permit_Name:</b>{Permit_Name}<br><b>Permt_Status:</b>{Permit_Status}<br><b>Segment_FQNIDs:</b>{Segment_FQNIDs}<br><b>Site Span NFIDs:</b>{NFIDs}<br><b>Actual Footage:</b>{Tracker_Actual_Footage}<br><b>Estimated Submitted Date to MasTec:</b>{Estimated_Sumbit_Date}<br><b>Submitted to Mastec:</b>{Submitted_to_Mastec}"
       }	
 
         var queryOccs = dom.byId("query-occs");
@@ -205,15 +205,6 @@
 			
 		<tr>	
 		 <td width = "15%" valign="top" >
-	         <div id="optionsDiv" class="esri-widget" >
-                 <p>
-                 Select a query type and click a point on the map to view the results.
-                 </p>
-                 <select id="query-type" class="esri-widget">
-                <option value="basic">Basic Query</option>
-
-               </select>
-                </div>
 		</td>
 			
 		 <td width = "70%" valign="top">
@@ -223,7 +214,7 @@
 				
 		<td width = "15%" valign="top">
 		                
-				<div  id="infoDiv" align ="right">
+				<div  id="infoDiv" align ="left">
 				Permit Status: 
 				<select  id="permit_check" name="permit[category]" hdpp="permit_category">
 				<option value="">(Blanks)</option>
