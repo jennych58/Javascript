@@ -40,8 +40,8 @@
         "esri/geometry/geometryEngine",
         "esri/Graphic",
         "esri/widgets/Legend",
-	 "esri/widgets/Compass",	      
-	 "esri/widgets/ScaleBar",
+	"esri/widgets/Compass",	      
+	"esri/widgets/ScaleBar",
         "dojo/on",
         "dojo/dom",
         "dojo/dom-construct",
@@ -60,10 +60,7 @@
         var occsUrl =
           "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13";
 
-
         var queryOccs = dom.byId("query-occs");
-
- 
 
         // occurrences
         var occsLayer = new FeatureLayer({
@@ -98,8 +95,7 @@
           ]
         });
       view.ui.add(legend, "bottom-right");
-	   
-	      
+      
 	 var scaleBar = new ScaleBar({
           view: view,
           unit: "dual" // The scale bar displays both metric and non-metric units.
@@ -113,7 +109,7 @@
 	// adds the compass to the top left corner of the MapView
 	view.ui.add(compass, "top-left");  
 	   
-
+   //query_permit_status
        on(queryOccs, "click", function() {
           queryOccurrences()
             .then(displayResults);
