@@ -1,188 +1,167 @@
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="initial-scale=1,maximum-scale=1,user-scalable=no"
-    />
 
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Permits Tracking</title>
 <link href="css/inline-list.css" rel="stylesheet" />
-    
-    <link
-      rel="stylesheet"
-      href="https://js.arcgis.com/4.14/esri/themes/light/main.css"
-    />
-  
-    <script src="https://js.arcgis.com/4.14/"></script>
 
-    <style>
-      html,
-      body,
-      #viewDiv {
-        height: 100%;
-        width: 100%;
-        margin: 0;
-        padding: 0;
-	align-content: center;
-      }
-      #optionsDiv {
-        background-color: white;
-        color: black;
-        padding: 6px;
-        max-width: 400px;
-	align-content: right;
-      }
-    </style>
-    <script>
-      require([
+  <link rel="stylesheet" href="https://js.arcgis.com/4.8/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.8/"></script>
+
+   <style>
+    html,
+    body,
+    #viewDiv {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    #infoDiv {
+      background-color: white;
+      color: black;
+      padding: 6px;
+      width: 400px;
+    }
+
+    #results {
+      font-weight: bolder;
+    }
+  </style>
+
+<script>	
+   require([
         "esri/Map",
-        "esri/Graphic",
         "esri/views/MapView",
         "esri/layers/FeatureLayer",
+        "esri/layers/GraphicsLayer",
+        "esri/geometry/geometryEngine",
+        "esri/Graphic",
         "esri/widgets/Legend",
-        "esri/widgets/Compass",	      
-	 "esri/widgets/ScaleBar"
-      ], function(Map, Graphic, MapView, FeatureLayer, ScaleBar,Compass,Legend) {
-        // Crime in SF
-        var layer = new FeatureLayer({
-               url: "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
-          
-          outFields: ["*"]
+	 "esri/widgets/Compass",	      
+	 "esri/widgets/ScaleBar",
+        "dojo/on",
+        "dojo/dom",
+        "dojo/dom-construct",
+        "dojo/domReady!"
+      ],
+      function(
+        Map, MapView,
+        FeatureLayer,
+        GraphicsLayer,
+        geometryEngine,
+        Graphic, Legend,
+	Compass,ScaleBar,
+        on, dom, domConstruct
+      ) {
+
+        var occsUrl =
+          "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13";
+
+
+        var queryOccs = dom.byId("query-occs");
+
+ 
+
+        // occurrences
+        var occsLayer = new FeatureLayer({
+          url: occsUrl,
+          outFields: ["*"],
+          visible: true
         });
+
+        // GraphicsLayer for displaying results
+        var resultsLayer = new GraphicsLayer();
 
         var map = new Map({
           basemap: "topo-vector",
-          layers: [layer]
+          //layers: [wellsLayer, quakesLayer, resultsLayer]
+          layers: [occsLayer,resultsLayer]
         });
 
         var view = new MapView({
           container: "viewDiv",
           map: map,
-          popup: {
-            autoOpenEnabled: false,
-            dockEnabled: true,
-            dockOptions: {
-              // dock popup at bottom-right side of view
-              buttonEnabled: false,
-              breakpoint: false,
-              position: "bottom-right"
-            }
-          }
+    zoom: 13,
+    center:  [-122.439087 , 47.248767]
         });
-	      
-     
+        view.ui.add("infoDiv", "top-right");
+
+        var legend = new Legend({
+          view: view,
+          layerInfos: [
+            {
+              layer: occsLayer
+            }
+          ]
+        });
+      view.ui.add(legend, "bottom-right");
+	   
 	      
 	 var scaleBar = new ScaleBar({
           view: view,
           unit: "dual" // The scale bar displays both metric and non-metric units.
         });
-	    
+       // Add the widget to the bottom left corner of the view
+        view.ui.add(scaleBar, "bottom-left");    
+	   
 	var compass = new Compass({
   	view: view
 	});
+	// adds the compass to the top left corner of the MapView
+	view.ui.add(compass, "top-left");  
+	   
 
-// adds the compass to the top left corner of the MapView
-view.ui.add(compass, "top-left")
-	      
-	let viewoptions = {
-		container: "viewDiv",
-		map: map,
-		center: [-122.439087 , 47.248767],
-	        scale: 100000
-			};
-        
-	view.scale = 8000;    
-	view.center = [-122.439087 , 47.248767];
-	view.zoom =15;
-	      
-        var legend = new Legend({
-          view: view,
-          layerInfos: [
-            {
-              layer: layer
-            }
-          ]
-        });
-	      
-        // Add the widget to the bottom left corner of the view
-        view.ui.add(scaleBar, "bottom-right");
-        // adds the compass to the top left corner of the MapView
-	view.ui.add(compass, "top-left");
-        view.ui.add(legend, "bottom-left");
-        view.ui.add("optionsDiv", "top-right");
-
-        // additional query fields initially set to null for basic query
-        var distance = null;
-        var units = null;
-
-        //create graphic for mouse point click
-        var pointGraphic = new Graphic({
-          symbol: {
-            type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
-            color: [0, 0, 139],
-            outline: {
-              color: [255, 255, 255],
-              width: 1.5
-            }
-          }
+       on(queryOccs, "click", function() {
+          queryOccurrences()
+            .then(displayResults);
         });
 
-        // when query type changes, set appropriate values
-        var queryOpts = document.getElementById("query-type");
+        function queryOccurrences() {
+          var query = occsLayer.createQuery();
+          var e = document.getElementById("permit_check").value;  
+        //   query.returnGeometry = true;
+  //query.outFields = ["*"];
+         query.where = "permit_status = '" + e + "'"; 
+         query.outSpatialReference = view.spatialReference;
+         // query.geometry = wellBuffer;
+        //  query.spatialRelationship = "intersects";
 
-        queryOpts.addEventListener("change", function() {
-          switch (queryOpts.value) {
-            // values set for distance query
-            case "distance":
-              distance = 0.3;
-              units = "FEET";
-              break;
-            default:
-              // Default set to basic query
-              distance = null;
-              units = null;
-          }
-        });
-        layer.load().then(function() {
-          // Set the view extent to the data extent
-          view.extent = layer.fullExtent;
-          layer.popupTemplate = layer.createPopupTemplate();
-        });
-
-        view.on("click", function(event) {
-          view.graphics.remove(pointGraphic);
-          queryFeatures(event);
-        });
-
-        function queryFeatures(screenPoint) {
-          const point = view.toMap(screenPoint);
-          layer
-            .queryFeatures({
-              geometry: point,
-              // distance and units will be null if basic query selected
-              distance: distance,
-              units: units,
-              spatialRelationship: "intersects",
-              returnGeometry: false,
-              outFields: ["*"]
-            })
-            .then(function(featureSet) {
-              // set graphic location to mouse pointer and add to mapview
-              pointGraphic.geometry = point;
-              view.graphics.add(pointGraphic);
-              // open popup of query result
-              view.popup.open({
-                location: point,
-                features: featureSet.features,
-                featureMenuOpen: true
-              });
-            });
+          return occsLayer.queryFeatures(query);
         }
+
+        // display the query results in the
+        // view and print the number of results to the DOM
+        function displayResults(results) {
+          
+          console.log(results);
+
+          resultsLayer.removeAll();
+          var features = results.features.map(function(graphic) {
+            graphic.symbol = {
+              type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+              style: "diamond",
+              size: 6.5,
+              color: "darkorange"
+            };
+            return graphic;
+          });
+          var numOccs = features.length;
+          dom.byId("results").innerHTML = numOccs + " occurrences found";
+          console.log(features);
+          resultsLayer.addMany(features);
+        }
+
       });
-    </script>
-  </head>
-  <body>
+  </script>
+	  
+  
+
+</head>
+
+<body>
 
 		<div class="container">
 			<img
@@ -210,15 +189,71 @@ view.ui.add(compass, "top-left")
 				</nav>
 			</header>
 		</div>
-    <div class="center" id="viewDiv" style="width:1000px;height:800px;margin:0 auto;"></div>
-    <div id="optionsDiv" class="esri-widget">
-      <p>
-        Select a query type and click a point on the map to view the results.
-      </p>
-      <select id="query-type" class="esri-widget">
-        <option value="basic">Basic Query</option>
+	  
+		<table style="width:100%">
+  		<tr>
+    		<th></th>
+   		 <th></th> 
+    		<th></th>
+ 		 </tr>
+			
+		<tr>	
+		 <td width = "15%" valign="top" >
+	         <div id="optionsDiv" class="esri-widget" >
+                 <p>
+                 Select a query type and click a point on the map to view the results.
+                 </p>
+                 <select id="query-type" class="esri-widget">
+                <option value="basic">Basic Query</option>
 
-      </select>
-    </div>
+               </select>
+                </div>
+		</td>
+			
+		 <td width = "70%" valign="top">
+	         <div id="viewDiv" style="width:1000px;height:800px;margin:2 auto;"></div>
+				
+		</td>
+				
+		<td width = "15%" valign="top">
+		                
+				<div  id="infoDiv" align ="right">
+				Permit Status: 
+				<select  id="permit_check" name="permit[category]" hdpp="permit_category">
+				<option value="">(Blanks)</option>
+				<option value="Canceled">Canceled</option>
+				<option value="Entity Review">Entity Review</option>
+				<option value="In Deign/In Production">In Deign/In Production</option>
+				<option value="In Production">In Production</option>
+				<option value="Not Started">Not Started</option>
+				<option value="Permit Expired">Permit Expired</option>
+				<option value="Permit Extended">Permit Extended</option>
+				<option value="Permit in Revision">Permit in Revision</option>
+				<option value="Permit Received" selected="selected">Permit Received</option>
+				<option value="Permit Submitted to Entity">Permit Submitted to Entity</option>
+				<option value="Permit Submitted to MasTec">Permit Submitted to MasTec</option></select>	
+	
+  				 <button id="query-occs">Query</button>
+  				  <br>
+  				  <div id="results"></div>
+ 				 </div>
+ 		    </td>
+		
+		    </tr>
+		
+		
+		 
+		 
+			
+	         
+		</table>  
+	  
+
+	  
+	  
+
+
   </body>
+
+
 </html>
