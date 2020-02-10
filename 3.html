@@ -220,5 +220,23 @@ view.ui.add(compass, "top-left")
 
       </select>
     </div>
+<div id="infoDiv">
+ <select id="permit_check" name="permit[category]" hdpp="permit_category">
+<option value="">(Blanks)</option>
+<option value="Canceled">Canceled</option>
+<option value="Entity Review">Entity Review</option>
+<option value="In Deign/In Production">In Deign/In Production</option>
+<option value="In Production">In Production</option>
+<option value="Not Started">Not Started</option>
+<option value="Permit Expired">Permit Expired</option>
+<option value="Permit Extended">Permit Extended</option>
+<option value="Permit in Revision">Permit in Revision</option>
+<option value="Permit Received" selected="selected">Permit Received</option>
+<option value="Permit Submitted to Entity">Permit Submitted to Entity</option>
+<option value="Permit Submitted to MasTec">Permit Submitted to MasTec</option></select>
+    <button id="query-occs">Query Occurrences</button>
+    <br>
+    <div id="results"></div>
+  </div>
   </body>
 </html>
