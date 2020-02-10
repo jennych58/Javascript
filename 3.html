@@ -179,7 +179,19 @@ align-content: center;
     		<th></th>
  		 </tr>
 		<tr>	
-		 <td width = "15%" valign="top"> </td>
+		 <td width = "15%" valign="top">
+	         <div id="optionsDiv" class="esri-widget">
+                 <p>
+                 Select a query type and click a point on the map to view the results.
+                 </p>
+                 <select id="query-type" class="esri-widget">
+                <option value="basic">Basic Query</option>
+
+               </select>
+                </div>
+			
+		</td>
+			
 		 <td width = "70%" valign="top" >
 	         <div id="viewDiv" style="width:1000px;height:800px;margin:2 auto;"></div>
 				
@@ -212,17 +224,9 @@ align-content: center;
 	
 		    </tr>
 		
-		 <tr>
-	    <div id="optionsDiv" class="esri-widget">
-            <p>
-           Select a query type and click a point on the map to view the results.
-           </p>
-           <select id="query-type" class="esri-widget">
-          <option value="basic">Basic Query</option>
-
-           </select>
-           </div>		 
-		 </tr>
+		
+		 
+		 
 			
 	         
 		</table>  
