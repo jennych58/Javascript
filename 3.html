@@ -60,16 +60,19 @@
 
         var occsUrl =
           "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13";
-
+        
+	 var popupPermit = {
+        "title": "Permit Info",
+        "content": "<b>Permit_FQNID:</b> {Permit_FQNID}<br><b>Permt_Status:</b> {Permt_Status}"
+      }	
 
         var queryOccs = dom.byId("query-occs");
-
- 
 
         // occurrences
         var occsLayer = new FeatureLayer({
           url: occsUrl,
           outFields: ["*"],
+	  popupTemplate: popupPermit,
           visible: true
         });
 
@@ -88,6 +91,9 @@
     zoom: 13,
     center:  [-122.439087 , 47.248767]
         });
+	   
+      // Define a popup for Trailheads
+   
         view.ui.add("infoDiv", "top-right");
 
         var legend = new Legend({
