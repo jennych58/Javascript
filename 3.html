@@ -8,15 +8,15 @@
 
 <title>Permits Tracking</title>
 <link href="css/inline-list.css" rel="stylesheet" />
-
-<link
+    
+    <link
       rel="stylesheet"
       href="https://js.arcgis.com/4.14/esri/themes/light/main.css"
     />
   
-<script src="https://js.arcgis.com/4.14/"></script>
+    <script src="https://js.arcgis.com/4.14/"></script>
 
-<style>
+    <style>
       html,
       body,
       #viewDiv {
@@ -24,8 +24,7 @@
         width: 100%;
         margin: 0;
         padding: 0;
- align-content: center;
-
+	align-content: center;
       }
       #optionsDiv {
         background-color: white;
@@ -50,47 +49,28 @@
     <script>
       require([
         "esri/Map",
+        "esri/Graphic",
         "esri/views/MapView",
         "esri/layers/FeatureLayer",
-        "esri/layers/GraphicsLayer",
-        "esri/geometry/geometryEngine",
-        "esri/Graphic",
         "esri/widgets/Legend",
         "esri/widgets/Compass",	      
-	 "esri/widgets/ScaleBar",
-	
-        "dojo/on",
-        "dojo/dom",
-        "dojo/dom-construct",
-        "dojo/domReady!"      
-	      
-	              
-      ], function(Map, MapView, FeatureLayer,GraphicsLayer,geometryEngine,Graphic,ScaleBar,Compass,Legend,on,dom,domConstruct) {
-
-	var occsUrl ="https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13";
-	var queryOccs = dom.byId("query-occs"); 
-	      
-	 // occurrences  
-        var layer = new FeeatureLayer({
-          url: occsUrl,
-          outFields: ["*"],
-          visible: true
+	 "esri/widgets/ScaleBar"
+      ], function(Map, Graphic, MapView, FeatureLayer, ScaleBar,Compass,Legend) {
+        // Crime in SF
+        var layer = new FeatureLayer({
+               url: "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
+          
+          outFields: ["*"]
         });
-
-        // GraphicsLayer for displaying results
-        var resultsLayer = new GraphicsLayer();
 
         var map = new Map({
           basemap: "topo-vector",
-          //layers: [wellsLayer, quakesLayer, resultsLayer]
-          layers: [layer,resultsLayer]
-        });     
-	      
+          layers: [layer]
+        });
 
         var view = new MapView({
           container: "viewDiv",
           map: map,
-
           popup: {
             autoOpenEnabled: false,
             dockEnabled: true,
@@ -102,7 +82,8 @@
             }
           }
         });
-	//view.ui.add("infoDiv", "top-right");    
+	      
+     
 	      
 	 var scaleBar = new ScaleBar({
           view: view,
@@ -114,8 +95,9 @@
 	});
 
 // adds the compass to the top left corner of the MapView
-//view.ui.add(compass, "top-left")
-        let viewoptions = {
+view.ui.add(compass, "top-left")
+	      
+	let viewoptions = {
 		container: "viewDiv",
 		map: map,
 		center: [-122.439087 , 47.248767],
@@ -140,50 +122,7 @@
         // adds the compass to the top left corner of the MapView
 	view.ui.add(compass, "top-left");
         view.ui.add(legend, "bottom-left");
-        view.ui.add("optionsDiv", "top-right");	      
-	      
-	          
-	//query Permit_Status      
-	on(queryOccs, "click", function() {
-          queryOccurrences()
-            .then(displayResults);
-        });
-
-        function queryOccurrences() {
-          var query = layer.createQuery();
-          var e = document.getElementById("permit_check").value
-        //   query.returnGeometry = true;
-  //query.outFields = ["*"];
-         query.where = "permit_status = '" + e + "'""; 
-         query.outSpatialReference = view.spatialReference;
-         // query.geometry = wellBuffer;
-        //  query.spatialRelationship = "intersects";
-
-          return layer.queryFeatures(query);
-        }
-
-        // display the query results in the
-        // view and print the number of results to the DOM
-        function displayResults(results) {
-          
-          console.log(results);
-
-          resultsLayer.removeAll();
-          var features = results.features.map(function(graphic) {
-            graphic.symbol = {
-              type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
-              style: "diamond",
-              size: 6.5,
-              color: "darkorange"
-            };
-            return graphic;
-          });
-          var numOccs = features.length;
-          dom.byId("results").innerHTML = numOccs + " items found";
-          console.log(features);
-          resultsLayer.addMany(features);
-        }
-
+        view.ui.add("optionsDiv", "top-right");
 
         // additional query fields initially set to null for basic query
         var distance = null;
