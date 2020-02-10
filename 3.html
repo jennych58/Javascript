@@ -11,10 +11,10 @@
     
     <link
       rel="stylesheet"
-      href="https://js.arcgis.com/4.14/esri/themes/light/main.css"
+      href="https://js.arcgis.com/4.8/esri/themes/light/main.css"
     />
   
-    <script src="https://js.arcgis.com/4.14/"></script>
+    <script src="https://js.arcgis.com/4.8/"></script>
 
     <style>
       html,
@@ -24,7 +24,7 @@
         width: 100%;
         margin: 0;
         padding: 0;
-	align-content: center;
+
       }
       #optionsDiv {
         background-color: white;
@@ -69,32 +69,22 @@
 	var occsUrl ="https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13";
 	var queryOccs = dom.byId("query-occs"); 
 	      
-	 // occurrences
-        var occsLayer = new FeatureLayer({
+	 // occurrences  
+        var layer = new FeeatureLayer({
           url: occsUrl,
           outFields: ["*"],
           visible: true
         });
-
+occsLayer
         // GraphicsLayer for displaying results
         var resultsLayer = new GraphicsLayer();
 
         var map = new Map({
           basemap: "topo-vector",
           //layers: [wellsLayer, quakesLayer, resultsLayer]
-          layers: [occsLayer,resultsLayer]
+          layers: [layer,resultsLayer]
         });     
 	      
-         <!--
-	var layer = new FeatureLayer({
-               url: occsUrl,   
-         outFields: ["*"]
-        });
-       -->
-        var map = new Map({
-          basemap: "topo-vector",
-          layers: [occsLayer,resultsLayer]
-        });
 
         var view = new MapView({
           container: "viewDiv",
@@ -161,7 +151,7 @@ view.ui.add(compass, "top-left")
         });
 
         function queryOccurrences() {
-          var query = occsLayer.createQuery();
+          var query = layer.createQuery();
           var e = document.getElementById("permit_check").value
         //   query.returnGeometry = true;
   //query.outFields = ["*"];
@@ -170,7 +160,7 @@ view.ui.add(compass, "top-left")
          // query.geometry = wellBuffer;
         //  query.spatialRelationship = "intersects";
 
-          return occsLayer.queryFeatures(query);
+          return layer.queryFeatures(query);
         }
 
         // display the query results in the
