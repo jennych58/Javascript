@@ -1,80 +1,72 @@
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="initial-scale=1,maximum-scale=1,user-scalable=no"
-    />
 
-<title>Permits Tracking</title>
-<link href="css/inline-list.css" rel="stylesheet" />
-    
-    <link
-      rel="stylesheet"
-      href="https://js.arcgis.com/4.14/esri/themes/light/main.css"
-    />
-  
-    <script src="https://js.arcgis.com/4.14/"></script>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <!--
+  ArcGIS API for JavaScript, https://js.arcgis.com
+  For more information about the layers-scenelayer-edges sample, read the original sample description at developers.arcgis.com.
+  https://developers.arcgis.com/javascript/latest/layers-scenelayer-edges/index.html
+  -->
+<title>Query features from a FeatureLayer - 4.8</title>
 
-    <style>
-      html,
-      body,
-      #viewDiv {
-        height: 100%;
-        width: 100%;
-        margin: 0;
-        padding: 0;
-	align-content: center;
-      }
-	    
-     #infoDiv {
-       background-color: white;
-       color: black;
-       padding: 6px;
-       width: 400px;
-      }
+  <link rel="stylesheet" href="https://js.arcgis.com/4.8/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.8/"></script>
+
+  <style>
+    html,
+    body,
+    #viewDiv {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    #infoDiv {
+      background-color: white;
+      color: black;
+      padding: 6px;
+      width: 400px;
+    }
 
     #results {
       font-weight: bolder;
-     }
-      #optionsDiv {
-        background-color: white;
-        color: black;
-        padding: 6px;
-        max-width: 400px;
-	align-content: right;
-      }
-    </style>
-    <script>
-      require([
+    }
+  </style>
+
+  <script>
+    require([
         "esri/Map",
-        "esri/Graphic",
         "esri/views/MapView",
-        "esri/layers/GraphicsLayer",
-        "esri/geometry/geometryEngine",	      
         "esri/layers/FeatureLayer",
-        "esri/widgets/Legend",
-        "esri/widgets/Compass",	      
-	 "esri/widgets/ScaleBar",
-	      
-	 "dojo/on",
+        "esri/layers/GraphicsLayer",
+        "esri/geometry/geometryEngine",
+        "esri/Graphic",
+
+        "dojo/on",
         "dojo/dom",
         "dojo/dom-construct",
         "dojo/domReady!"
-      ], function(Map,  MapView, FeatureLayer, GraphicsLayer,geometryEngine,Graphic,on,dom, domConstruct,ScaleBar,Compass,Legend) {
-        
-	//featurelayer
-        var layer = new FeatureLayer({
-               url: "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
-          
-          outFields: ["*"]
-        });
+      ],
+      function(
+        Map, MapView,
+        FeatureLayer,
+        GraphicsLayer,
+        geometryEngine,
+        Graphic,
+        on, dom, domConstruct
+      ) {
 
- 	var occsUrl =
+        var occsUrl =
           "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13";
+
+
         var queryOccs = dom.byId("query-occs");
 
-         // occurrences
+ 
+
+        // occurrences
         var occsLayer = new FeatureLayer({
           url: occsUrl,
           outFields: ["*"],
@@ -87,56 +79,20 @@
         var map = new Map({
           basemap: "topo-vector",
           //layers: [wellsLayer, quakesLayer, resultsLayer]
-          layers: [layer,resultsLayer]
+          layers: [occsLayer,resultsLayer]
         });
 
         var view = new MapView({
           container: "viewDiv",
           map: map,
-          popup: {
-            autoOpenEnabled: false,
-            dockEnabled: true,
-            dockOptions: {
-              // dock popup at bottom-right side of view
-              buttonEnabled: false,
-              breakpoint: false,
-              position: "bottom-right"
-            }
-          }
+    zoom: 13,
+    center:  [-122.439087 , 47.248767]
         });
-	view.scale = 8000;    
-	view.center = [-122.439087 , 47.248767];
-	view.zoom =13;      
-     
-     
-	 var scaleBar = new ScaleBar({
-          view: view,
-          unit: "dual" // The scale bar displays both metric and non-metric units.
-        });
-	    
-	var compass = new Compass({
-  	view: view
-	});
-  
-        var legend = new Legend({
-          view: view,
-          layerInfos: [
-            {
-              layer: layer
-            }
-          ]
-        });
-	      
-	      
-        // Add the widget to the bottom left corner of the view
-        view.ui.add(scaleBar, "bottom-right");
-        // adds the compass to the top left corner of the MapView
-	view.ui.add(compass, "top-left");
-        view.ui.add(legend, "bottom-left");
-        view.ui.add("optionsDiv", "top-right");
+        view.ui.add("infoDiv", "top-right");
 
-	//query permit_status
-	 
+
+
+
        on(queryOccs, "click", function() {
           queryOccurrences()
             .then(displayResults);
@@ -146,7 +102,7 @@
           var query = occsLayer.createQuery();
           var e = document.getElementById("permit_check").value;  
         //   query.returnGeometry = true;
- 	 //query.outFields = ["*"];
+  //query.outFields = ["*"];
          query.where = "permit_status = '" + e + "'"; 
          query.outSpatialReference = view.spatialReference;
          // query.geometry = wellBuffer;
@@ -177,108 +133,19 @@
           resultsLayer.addMany(features);
         }
 
-      });     
-      
-	      
-        // additional query fields initially set to null for basic query
-        var distance = null;
-        var units = null;
-
-        //create graphic for mouse point click
-        var pointGraphic = new Graphic({
-          symbol: {
-            type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
-            color: [0, 0, 139],
-            outline: {
-              color: [255, 255, 255],
-              width: 1.5
-            }
-          }
-        });
-
-        // when query type changes, set appropriate values
-        var queryOpts = document.getElementById("query-type");
-
-        queryOpts.addEventListener("change", function() {
-          switch (queryOpts.value) {
-            // values set for distance query
-            case "distance":
-              distance = 0.3;
-              units = "FEET";
-              break;
-            default:
-              // Default set to basic query
-              distance = null;
-              units = null;
-          }
-        });
-        layer.load().then(function() {
-          // Set the view extent to the data extent
-          view.extent = layer.fullExtent;
-          layer.popupTemplate = layer.createPopupTemplate();
-        });
-
-        view.on("click", function(event) {
-          view.graphics.remove(pointGraphic);
-          queryFeatures(event);
-        });
-
-        function queryFeatures(screenPoint) {
-          const point = view.toMap(screenPoint);
-          layer
-            .queryFeatures({
-              geometry: point,
-              // distance and units will be null if basic query selected
-              distance: distance,
-              units: units,
-              spatialRelationship: "intersects",
-              returnGeometry: false,
-              outFields: ["*"]
-            })
-            .then(function(featureSet) {
-              // set graphic location to mouse pointer and add to mapview
-              pointGraphic.geometry = point;
-              view.graphics.add(pointGraphic);
-              // open popup of query result
-              view.popup.open({
-                location: point,
-                features: featureSet.features,
-                featureMenuOpen: true
-              });
-            });
-        }
       });
-    </script>
-  </head>
-  <body>
-		<div class="container">
-			<img
-				src="images/banner1.jpg"
-				alt="Sefnco Engineer"
-				height="100"
-				width="800"
-				class="center"
-			/>
-			<header>
-				<nav>
-					<ul class="nav">
-						<li><a href="index.html">Home</a></li>
-						<li><a class="current" href="permits.html">Permits Tracking</a></li>
-						<li><a href="segments.html">Setments Tracking</a></li>
-						<li><a href="nfids.html">Site NFIDs Tracking</a></li>
-						<li>
-							<a
-								href="#"
-								onClick="MyWindow=window.open('https://www.arcgis.com/home/signin.html','MyWindow','width=600,height=300'); return false;"
-								>Login</a
-							>
-						</li>
-					</ul>
-				</nav>
-			</header>
-		</div>
-    <div class="center" id="viewDiv" style="width:1000px;height:800px;margin:0 auto;"></div>
-     <div id="infoDiv">
+  </script>
+
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+ 
+
+
+     
+    
+ <div id="infoDiv">
  <select id="permit_check" name="permit[category]" hdpp="permit_category">
 <option value="">(Blanks)</option>
 <option value="Canceled">Canceled</option>
@@ -296,16 +163,6 @@
     <br>
     <div id="results"></div>
   </div>
-	  
-	  
-    <div id="optionsDiv" class="esri-widget">
-      <p>
-        Select a query type and click a point on the map to view the results.
-      </p>
-      <select id="query-type" class="esri-widget">
-        <option value="basic">Basic Query</option>
+</body>
 
-      </select>
-    </div>
-  </body>
 </html>
