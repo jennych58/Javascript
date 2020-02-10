@@ -204,7 +204,7 @@ align-content: center;
 
         function queryFeatures(screenPoint) {
           const point = view.toMap(screenPoint);
-          occsLayer
+          Layer
             .queryFeatures({
               geometry: point,
               // distance and units will be null if basic query selected
