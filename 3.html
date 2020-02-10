@@ -25,14 +25,14 @@ align-content: center;
         color: black;
         padding: 6px;
         max-width: 200px;
-	align-content: left;
+	align-content: right;
       }
      #infoDiv {
       background-color: white;
       color: black;
       padding: 6px;
       width: 250px;
-      align-content: right;
+      align-content: left;
     }
 
     #results {
@@ -185,7 +185,7 @@ align-content: center;
 				
 		</td>
 				
-		<td width = "15%">
+		<td width = "15%" valign="top" align ="left">
 		                
 				<div  id="infoDiv" >
 				Permit Status: 
@@ -210,21 +210,27 @@ align-content: center;
  		    </td>
 				
 	
-		   </tr>
+		    </tr>
+		
+		 <tr>
+	    <div id="optionsDiv" class="esri-widget">
+            <p>
+           Select a query type and click a point on the map to view the results.
+           </p>
+           <select id="query-type" class="esri-widget">
+          <option value="basic">Basic Query</option>
+
+           </select>
+           </div>		 
+		 </tr>
+			
+	         
 		</table>  
 	  
 
 	  
 	  
-    <div id="optionsDiv" class="esri-widget">
-      <p>
-        Select a query type and click a point on the map to view the results.
-      </p>
-      <select id="query-type" class="esri-widget">
-        <option value="basic">Basic Query</option>
 
-      </select>
-    </div>
 
   </body>
 
