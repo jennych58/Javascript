@@ -62,8 +62,8 @@
           "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13";
         
 	 var popupPermit = {
-        "title": "Permit Info",
-        "content": "<b>Permit_FQNID:</b> {Permit_FQNID}<br><b>Permt_Status:</b> {Permt_Status}"
+        "title": "Permit Information:",
+        "content": "<b>Permit_FQNID:</b> {Permit_FQNID}<br><b>Permit_Name:</b>{Permit_Name}<b>Permt_Status:</b> {Permit_Status}<br><b>Permit_FQNID:</b> {Permit_FQNID}<br>"
       }	
 
         var queryOccs = dom.byId("query-occs");
@@ -88,11 +88,10 @@
         var view = new MapView({
           container: "viewDiv",
           map: map,
-    zoom: 13,
-    center:  [-122.439087 , 47.248767]
+         zoom: 13,
+       center:  [-122.439087 , 47.248767]
         });
 	   
-      // Define a popup for Trailheads
    
         view.ui.add("infoDiv", "top-right");
 
