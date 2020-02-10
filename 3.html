@@ -1,100 +1,224 @@
-<!doctype html>
-<html lang="en">
-<head>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
 
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=7, IE=9, IE=10">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="translucent-black">
-
-    <title>Custom Basemap Switcher</title>
-
-    <script src="http://js.arcgis.com/3.7/"></script>
-
-    <link rel="stylesheet" href="http://js.arcgis.com/3.7/js/dojo/dijit/themes/nihilo/nihilo.css">
-    <link rel="stylesheet" href="http://js.arcgis.com/3.7/js/esri/css/esri.css">
+<title>Permits Tracking</title>
+<link href="css/inline-list.css" rel="stylesheet" />
+    
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.14/esri/themes/light/main.css"
+    />
+  
+    <script src="https://js.arcgis.com/4.14/"></script>
 
     <style>
-#layerList{
-    position: absolute;
-    top: 500px;
-    right: 12px;
-    width: 300px;
-    height: 200px;
-    border: 1px solid black;
-    z-index: 2;
-    background-color: rgba(250, 250, 250,1);
-}      
+      html,
+      body,
+      #viewDiv {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+	align-content: center;
+      }
+      #optionsDiv {
+        background-color: white;
+        color: black;
+        padding: 6px;
+        max-width: 400px;
+	align-content: right;
+      }
     </style>
     <script>
- //????,??????   
-var pFeaLyrs = new Array();
-
-function LoadMapByCount(layerCount){
-    require([  
+      require([
         "esri/Map",
+        "esri/Graphic",
         "esri/views/MapView",
-        "esri/layers/FeatureLayer",  
-        "esri/core/watchUtils",
-        "dojo/dom",
-        "dojo/promise/all",
-        "dojo/query",
-        "dojo/on",
-        "dojo/domReady!"  
-        ], function (Map, MapView, FeatureLayer, watchUtils, dom, all, query, on)
-        {
-            var pMap = new Map();
+        "esri/layers/FeatureLayer",
+        "esri/widgets/Legend",
+        "esri/widgets/Compass",	      
+	 "esri/widgets/ScaleBar"
+      ], function(Map, Graphic, MapView, FeatureLayer, ScaleBar,Compass,Legend) {
+        // Crime in SF
+        var layer = new FeatureLayer({
+               url: "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
+          
+          outFields: ["*"]
+        });
 
-            var pMapView = new MapView({
-                container: "viewDiv",
-                map: pMap
+        var map = new Map({
+          basemap: "topo-vector",
+          layers: [layer]
+        });
+
+        var view = new MapView({
+          container: "viewDiv",
+          map: map,
+          popup: {
+            autoOpenEnabled: false,
+            dockEnabled: true,
+            dockOptions: {
+              // dock popup at bottom-right side of view
+              buttonEnabled: false,
+              breakpoint: false,
+              position: "bottom-right"
+            }
+          }
+        });
+	      
+     
+	      
+	 var scaleBar = new ScaleBar({
+          view: view,
+          unit: "dual" // The scale bar displays both metric and non-metric units.
+        });
+	    
+	var compass = new Compass({
+  	view: view
+	});
+
+// adds the compass to the top left corner of the MapView
+view.ui.add(compass, "top-left")
+	      
+	let viewoptions = {
+		container: "viewDiv",
+		map: map,
+		center: [-122.439087 , 47.248767],
+	        scale: 100000
+			};
+        
+	view.scale = 8000;    
+	view.center = [-122.439087 , 47.248767];
+	view.zoom =15;
+	      
+        var legend = new Legend({
+          view: view,
+          layerInfos: [
+            {
+              layer: layer
+            }
+          ]
+        });
+	      
+        // Add the widget to the bottom left corner of the view
+        view.ui.add(scaleBar, "bottom-right");
+        // adds the compass to the top left corner of the MapView
+	view.ui.add(compass, "top-left");
+        view.ui.add(legend, "bottom-left");
+        view.ui.add("optionsDiv", "top-right");
+
+        // additional query fields initially set to null for basic query
+        var distance = null;
+        var units = null;
+
+        //create graphic for mouse point click
+        var pointGraphic = new Graphic({
+          symbol: {
+            type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+            color: [0, 0, 139],
+            outline: {
+              color: [255, 255, 255],
+              width: 1.5
+            }
+          }
+        });
+
+        // when query type changes, set appropriate values
+        var queryOpts = document.getElementById("query-type");
+
+        queryOpts.addEventListener("change", function() {
+          switch (queryOpts.value) {
+            // values set for distance query
+            case "distance":
+              distance = 0.3;
+              units = "FEET";
+              break;
+            default:
+              // Default set to basic query
+              distance = null;
+              units = null;
+          }
+        });
+        layer.load().then(function() {
+          // Set the view extent to the data extent
+          view.extent = layer.fullExtent;
+          layer.popupTemplate = layer.createPopupTemplate();
+        });
+
+        view.on("click", function(event) {
+          view.graphics.remove(pointGraphic);
+          queryFeatures(event);
+        });
+
+        function queryFeatures(screenPoint) {
+          const point = view.toMap(screenPoint);
+          layer
+            .queryFeatures({
+              geometry: point,
+              // distance and units will be null if basic query selected
+              distance: distance,
+              units: units,
+              spatialRelationship: "intersects",
+              returnGeometry: false,
+              outFields: ["*"]
+            })
+            .then(function(featureSet) {
+              // set graphic location to mouse pointer and add to mapview
+              pointGraphic.geometry = point;
+              view.graphics.add(pointGraphic);
+              // open popup of query result
+              view.popup.open({
+                location: point,
+                features: featureSet.features,
+                featureMenuOpen: true
+              });
             });
-
-            //????,
-            AddLayer2Map();
-             //????URL!
-            function AddLayer2Map() {
-                for (var i = 0; i < layerCount; i++) {
-                    var mainLayer = new FeatureLayer({
-                        url: "https://arcgis.sefnco.com/arcgis/rest/services/BH_FEDERAL_WAY_TO_TACOMA_MSC_POINTS/MapServer/"+i
-                    });
-                    pFeaLyrs[i]=mainLayer;
-                    pMap.add(mainLayer);
-                };
-            };
-
-            setTimeout(function() {
-                var htmlTxt="" ;
-                for (var i = 0; i < layerCount; i++) {
-                    var lyr = pFeaLyrs[i];
-                    htmlTxt += "<input id='" + lyr.id + "' name='layerList' class='listCss' type='checkbox' value='checkbox'  "+(lyr.visible ? "checked":"")+"/>"+lyr.title + "<br>";
-                }
-
-                document.getElementById("layerList").innerHTML=htmlTxt; 
-
-                on(dojo.query(".listCss"), "click", function() {
-                    var inputs = dojo.query(".listCss");
-                    alert(inputs.length);
-                    for(var i=0;i<inputs.length;i++){ 
-                        var lyr =pFeaLyrs[i];
-                        if(inputs[i].checked) lyr.visible=true;
-                        else lyr.visible=false;
-                    }
-                });     
-            }, 1000);
         }
-    );
-};       
+      });
     </script>
+  </head>
+  <body>
 
-</head>
-<body 
-          <div id="viewDiv"></div>
-    <div id="layerList"></div>
-    <script>
-        //???????????????,???????
-        LoadMapByCount(19);
-    </script>
-</body>
+		<div class="container">
+			<img
+				src="images/banner1.jpg"
+				alt="Sefnco Engineer"
+				height="100"
+				width="800"
+				class="center"
+			/>
+			<header>
+				<nav>
+					<ul class="nav">
+						<li><a href="index.html">Home</a></li>
+						<li><a class="current" href="permits.html">Permits Tracking</a></li>
+						<li><a href="segments.html">Setments Tracking</a></li>
+						<li><a href="nfids.html">Site NFIDs Tracking</a></li>
+						<li>
+							<a
+								href="#"
+								onClick="MyWindow=window.open('https://www.arcgis.com/home/signin.html','MyWindow','width=600,height=300'); return false;"
+								>Login</a
+							>
+						</li>
+					</ul>
+				</nav>
+			</header>
+		</div>
+    <div class="center" id="viewDiv" style="width:1000px;height:800px;margin:0 auto;"></div>
+    <div id="optionsDiv" class="esri-widget">
+      <p>
+        Select a query type and click a point on the map to view the results.
+      </p>
+      <select id="query-type" class="esri-widget">
+        <option value="basic">Basic Query</option>
+
+      </select>
+    </div>
+  </body>
 </html>
