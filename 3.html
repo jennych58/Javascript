@@ -10,45 +10,14 @@
   <script src="https://js.arcgis.com/4.8/"></script>
 
   <style>
-    html,
-    body,
-    #viewDiv {
-      height: 100%;
-      width: 100%;
-      margin: 0;
-      padding: 0;
-align-content: center;
-    }
-
-      #optionsDiv {
-        background-color: white;
-        color: black;
-        padding: 6px;
-        max-width: 200px;
-	align-content: left;
-      }
-     #infoDiv {
-      background-color: white;
-      color: black;
-      padding: 6px;
-      width: 250px;
-      align-content: left;
-    }
-
-    #results {
-      font-weight: bolder;
-    }
-  </style>
-
-  <script>
-    require([
+   require([
         "esri/Map",
         "esri/views/MapView",
         "esri/layers/FeatureLayer",
         "esri/layers/GraphicsLayer",
         "esri/geometry/geometryEngine",
         "esri/Graphic",
-   	    
+
         "dojo/on",
         "dojo/dom",
         "dojo/dom-construct",
@@ -90,24 +59,56 @@ align-content: center;
         var view = new MapView({
           container: "viewDiv",
           map: map,
-          zoom: 13,
-          center:  [-122.439087 , 47.248767],
-
-          popup: {
-            autoOpenEnabled: false,
-            dockEnabled: true,
-            dockOptions: {
-              // dock popup at bottom-right side of view
-              buttonEnabled: false,
-              breakpoint: false,
-              position: "bottom-right"
-            }
-          }
+    zoom: 13,
+    center:  [-122.439087 , 47.248767]
         });
-	
-     
         view.ui.add("infoDiv", "top-right");
- 	
+
+
+
+
+       on(queryOccs, "click", function() {
+          queryOccurrences()
+            .then(displayResults);
+        });
+
+        function queryOccurrences() {
+          var query = occsLayer.createQuery();
+          var e = document.getElementById("permit_check").value;  
+        //   query.returnGeometry = true;
+  //query.outFields = ["*"];
+         query.where = "permit_status = '" + e + "'"; 
+         query.outSpatialReference = view.spatialReference;
+         // query.geometry = wellBuffer;
+        //  query.spatialRelationship = "intersects";
+
+          return occsLayer.queryFeatures(query);
+        }
+
+        // display the query results in the
+        // view and print the number of results to the DOM
+        function displayResults(results) {
+          
+          console.log(results);
+
+          resultsLayer.removeAll();
+          var features = results.features.map(function(graphic) {
+            graphic.symbol = {
+              type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+              style: "diamond",
+              size: 6.5,
+              color: "darkorange"
+            };
+            return graphic;
+          });
+          var numOccs = features.length;
+          dom.byId("results").innerHTML = numOccs + " occurrences found";
+          console.log(features);
+          resultsLayer.addMany(features);
+        }
+
+      });
+  </script>
 	  
   </script>
 
