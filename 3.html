@@ -8,15 +8,15 @@
 
 <title>Permits Tracking</title>
 <link href="css/inline-list.css" rel="stylesheet" />
-    
-    <link
+
+<link
       rel="stylesheet"
-      href="https://js.arcgis.com/4.8/esri/themes/light/main.css"
+      href="https://js.arcgis.com/4.14/esri/themes/light/main.css"
     />
   
-    <script src="https://js.arcgis.com/4.8/"></script>
+<script src="https://js.arcgis.com/4.14/"></script>
 
-    <style>
+<style>
       html,
       body,
       #viewDiv {
@@ -24,6 +24,7 @@
         width: 100%;
         margin: 0;
         padding: 0;
+ align-content: center;
 
       }
       #optionsDiv {
@@ -89,8 +90,7 @@
         var view = new MapView({
           container: "viewDiv",
           map: map,
-	  zoom: 13,
-    	  center:  [-122.439087 , 47.248767],
+
           popup: {
             autoOpenEnabled: false,
             dockEnabled: true,
@@ -102,7 +102,7 @@
             }
           }
         });
-	view.ui.add("infoDiv", "top-right");    
+	//view.ui.add("infoDiv", "top-right");    
 	      
 	 var scaleBar = new ScaleBar({
           view: view,
