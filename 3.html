@@ -1,1 +1,168 @@
+<html>
 
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <!--
+  ArcGIS API for JavaScript, https://js.arcgis.com
+  For more information about the layers-scenelayer-edges sample, read the original sample description at developers.arcgis.com.
+  https://developers.arcgis.com/javascript/latest/layers-scenelayer-edges/index.html
+  -->
+<title>Query features from a FeatureLayer - 4.8</title>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.8/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.8/"></script>
+
+  <style>
+    html,
+    body,
+    #viewDiv {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    #infoDiv {
+      background-color: white;
+      color: black;
+      padding: 6px;
+      width: 400px;
+    }
+
+    #results {
+      font-weight: bolder;
+    }
+  </style>
+
+  <script>
+    require([
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/layers/FeatureLayer",
+        "esri/layers/GraphicsLayer",
+        "esri/geometry/geometryEngine",
+        "esri/Graphic",
+
+        "dojo/on",
+        "dojo/dom",
+        "dojo/dom-construct",
+        "dojo/domReady!"
+      ],
+      function(
+        Map, MapView,
+        FeatureLayer,
+        GraphicsLayer,
+        geometryEngine,
+        Graphic,
+        on, dom, domConstruct
+      ) {
+
+        var occsUrl =
+          "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13";
+
+
+        var queryOccs = dom.byId("query-occs");
+
+ 
+
+        // occurrences
+        var occsLayer = new FeatureLayer({
+          url: occsUrl,
+          outFields: ["*"],
+          visible: true
+        });
+
+        // GraphicsLayer for displaying results
+        var resultsLayer = new GraphicsLayer();
+
+        var map = new Map({
+          basemap: "topo-vector",
+          //layers: [wellsLayer, quakesLayer, resultsLayer]
+          layers: [occsLayer,resultsLayer]
+        });
+
+        var view = new MapView({
+          container: "viewDiv",
+          map: map,
+    zoom: 13,
+    center:  [-122.439087 , 47.248767]
+        });
+        view.ui.add("infoDiv", "top-right");
+
+
+
+
+       on(queryOccs, "click", function() {
+          queryOccurrences()
+            .then(displayResults);
+        });
+
+        function queryOccurrences() {
+          var query = occsLayer.createQuery();
+          var e = document.getElementById("permit_check").value;  
+        //   query.returnGeometry = true;
+  //query.outFields = ["*"];
+         query.where = "permit_status = '" + e + "'"; 
+         query.outSpatialReference = view.spatialReference;
+         // query.geometry = wellBuffer;
+        //  query.spatialRelationship = "intersects";
+
+          return occsLayer.queryFeatures(query);
+        }
+
+        // display the query results in the
+        // view and print the number of results to the DOM
+        function displayResults(results) {
+          
+          console.log(results);
+
+          resultsLayer.removeAll();
+          var features = results.features.map(function(graphic) {
+            graphic.symbol = {
+              type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+              style: "diamond",
+              size: 6.5,
+              color: "darkorange"
+            };
+            return graphic;
+          });
+          var numOccs = features.length;
+          dom.byId("results").innerHTML = numOccs + " occurrences found";
+          console.log(features);
+          resultsLayer.addMany(features);
+        }
+
+      });
+  </script>
+
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+ 
+
+
+     
+    
+ <div id="infoDiv">
+ <select id="permit_check" name="permit[category]" hdpp="permit_category">
+<option value="">(Blanks)</option>
+<option value="Canceled">Canceled</option>
+<option value="Entity Review">Entity Review</option>
+<option value="In Deign/In Production">In Deign/In Production</option>
+<option value="In Production">In Production</option>
+<option value="Not Started">Not Started</option>
+<option value="Permit Expired">Permit Expired</option>
+<option value="Permit Extended">Permit Extended</option>
+<option value="Permit in Revision">Permit in Revision</option>
+<option value="Permit Received" selected="selected">Permit Received</option>
+<option value="Permit Submitted to Entity">Permit Submitted to Entity</option>
+<option value="Permit Submitted to MasTec">Permit Submitted to MasTec</option></select>
+    <button id="query-occs">Query Occurrences</button>
+    <br>
+    <div id="results"></div>
+  </div>
+</body>
+
+</html>
