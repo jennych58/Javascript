@@ -222,15 +222,6 @@ view.ui.add(compass, "top-left")
 			</header>
 		</div>
     <div class="center" id="viewDiv" style="width:1000px;height:800px;margin:0 auto;"></div>
-    <div id="optionsDiv" class="esri-widget">
-      <p>
-        Select a query type and click a point on the map to view the results.
-      </p>
-      <select id="query-type" class="esri-widget">
-        <option value="basic">Basic Query</option>
-
-      </select>
-    </div>
 <div id="infoDiv">
  <select id="permit_check" name="permit[category]" hdpp="permit_category">
 <option value="">(Blanks)</option>
@@ -248,6 +239,17 @@ view.ui.add(compass, "top-left")
     <button id="query-occs">Query Occurrences</button>
     <br>
     <div id="results"></div>
-  </div>
+  </div>	  
+	  
+    <div id="optionsDiv" class="esri-widget">
+      <p>
+        Select a query type and click a point on the map to view the results.
+      </p>
+      <select id="query-type" class="esri-widget">
+        <option value="basic">Basic Query</option>
+
+      </select>
+    </div>
+
   </body>
 </html>
