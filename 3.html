@@ -182,10 +182,10 @@
               units = null;
           }
         });
-        layer.load().then(function() {
+        occsLayer.load().then(function() {
           // Set the view extent to the data extent
-          view.extent = layer.fullExtent;
-          layer.popupTemplate = layer.createPopupTemplate();
+          view.extent = occsLayer.fullExtent;
+          occsLayer.popupTemplate = occsLayer.createPopupTemplate();
         });
 
         view.on("click", function(event) {
@@ -195,7 +195,7 @@
 
         function queryFeatures(screenPoint) {
           const point = view.toMap(screenPoint);
-          layer
+          occsLayer
             .queryFeatures({
               geometry: point,
               // distance and units will be null if basic query selected
