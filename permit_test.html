@@ -24,9 +24,12 @@
       color: black;
       padding: 10px;
       width: 400px;
- 
-    }
 
+    }
+     #drop-downs {
+       padding-bottom: 20px;
+    }   
+	   
     #results {
       font-weight: bolder;
     }
@@ -60,7 +63,10 @@
 
         var occsUrl =
           "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13";
-        
+	
+	
+        var permitIdSelect = document.getElementById("permit-id");
+	   
 	 var popupPermit = {
         "title": "Permit Information:",
         "content": "<b>Permit_FQNID:</b> {Permit_FQNID}<br><b>Permit_Name:</b>{Permit_Name}<br><b>Permt_Status:</b>{Permit_Status}<br><b>Segment_FQNIDs:</b>{Segment_FQNIDs}<br><b>Site Span NFIDs:</b>{NFIDs}<br><b>Actual Footage:</b>{Tracker_Actual_Footage}ft<br><b>Estimated Submitted Date to MasTec:</b>{Estimated_Sumbit_Date}<br><b>Submitted to Mastec:</b>{Submitted_to_Mastec}"
@@ -76,6 +82,8 @@
           visible: true
         });
 
+
+	   
         // GraphicsLayer for displaying results
         var resultsLayer = new GraphicsLayer();
 
@@ -158,8 +166,88 @@
           dom.byId("results").innerHTML = numOccs + " occurrences found";
           console.log(features);
           resultsLayer.addMany(features);
+      }
+
+         // query all features from the occsLayer find Permit FQN_ID
+        view
+          .when(function() {
+            return occsLayer.when(function() {
+              var query = occsLayer.createQuery();
+              return occsLayer.queryFeatures(query);
+            });
+          })
+          .then(getValues)
+          .then(getUniqueValues)
+          .then(addToSelect);
+
+        // return an array of all the values in the
+        // permit_fqnid field of the occsLayer
+        function getValues(response) {
+          var features = response.features;
+          var values = features.map(function(feature) {
+            return feature.attributes.permit_fqnid;
+          });
+          return values;
         }
 
+        // return an array of unique values in
+        // the permit_fqnid field of the occsLayer
+        function getUniqueValues(values) {
+          var uniqueValues = [];
+
+          values.forEach(function(item, i) {
+            if (
+              (uniqueValues.length < 1 || uniqueValues.indexOf(item) === -1) &&
+              item !== ""
+            ) {
+              uniqueValues.push(item);
+            }
+          });
+          return uniqueValues;
+        }
+
+        // Add the unique values to the permit_fqnid
+        // select element. This will allow the user
+        // to filter fqn_id.
+        function addToSelect(values) {
+          values.sort();
+          values.forEach(function(value) {
+            var option = document.createElement("option");
+            option.text = value;
+            permitIdSelect.add(option);
+          });
+
+          return setpermtisDefinitionExpression(permitIdSelectect.value);
+        }
+
+        // set the definition expression on the wells
+        // layer to reflect the selection of the user
+        function setpermitsDefinitionExpression(newValue) {
+          occsLayer.definitionExpression = "permit_fqnid = '" + newValue + "'";
+
+          if (!occsLayer.visible) {
+            occsLayer.visible = true;
+          }
+
+          return queryForpermitidGeometries();
+        }
+
+        // Get all the geometries of the wells layer
+        // the createQuery() method creates a query
+        // object that respects the definitionExpression
+        // of the layer
+        function queryForpermitidGeometries() {
+          var permitidQuery = occsLayer.createQuery();
+
+          return occsLayer.queryFeatures(permitidQuery).then(function(response) {
+            wellsGeometries = response.features.map(function(feature) {
+              return feature.geometry;
+            });
+
+            return wellsGeometries;
+          });
+        }
+	   
       });
   </script>
 </head>
