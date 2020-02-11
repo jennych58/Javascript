@@ -1,0 +1,215 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+
+<title>permit fqn_id query</title>
+
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.14/esri/themes/light/main.css"
+    />
+    <script src="https://js.arcgis.com/4.14/"></script>
+
+    <style>
+      html,
+      body,
+      #viewDiv {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      #infoDiv {
+        background-color: white;
+        color: black;
+        padding: 6px;
+        width: 400px;
+      }
+
+      #results {
+        font-weight: bolder;
+        padding-top: 10px;
+      }
+      .slider {
+        width: 100%;
+        height: 60px;
+      }
+      #drop-downs {
+        padding-bottom: 15px;
+      }
+    </style>
+
+    <script>
+      require([
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/layers/FeatureLayer",
+        "esri/layers/GraphicsLayer",
+        "esri/geometry/geometryEngine",
+        "esri/Graphic"
+     
+      ], function(
+        Map,
+        MapView,
+        FeatureLayer,
+        GraphicsLayer,
+        geometryEngine,
+        Graphic
+    
+      ) {
+        var permitUrl =
+          "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/Mapserver/13";
+
+    
+
+        var permitIdSelect = document.getElementById("permit-id");
+
+        
+
+        var queryQuakes = document.getElementById("query-permit");
+
+        // oil and gas wells
+        var permitLayer = new FeatureLayer({
+url:"https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/Mapserver/13",
+          outFields: ["*"],
+          visible: false
+        });
+
+
+
+        // GraphicsLayer for displaying results
+        var resultsLayer = new GraphicsLayer();
+
+        var map = new Map({
+          basemap: "dark-gray",
+          layers: [permitLayer, resultsLayer]
+        });
+
+        var view = new MapView({
+          container: "viewDiv",
+          map: map,
+          center: [-97.75188, 37.23308],
+          zoom: 10
+        });
+        view.ui.add("infoDiv", "top-right");
+
+        // query all features from the permitLayer 
+        view
+          .when(function() {
+            return permitLayer.when(function() {
+              var query = permitLayer.createQuery();
+              return permitLayer.queryFeatures(query);
+            });
+          })
+          .then(getValues)
+          .then(getUniqueValues)
+          .then(addToSelect);
+
+        // return an array of all the values in the
+        // permit_fqnid field of the permitLayer
+        function getValues(response) {
+          var features = response.features;
+          var values = features.map(function(feature) {
+            return feature.attributes.permit_fqnid;
+          });
+          return values;
+        }
+
+        // return an array of unique values in
+        // the permit_fqnid field of the permitLayer
+        function getUniqueValues(values) {
+          var uniqueValues = [];
+
+          values.forEach(function(item, i) {
+            if (
+              (uniqueValues.length < 1 || uniqueValues.indexOf(item) === -1) &&
+              item !== ""
+            ) {
+              uniqueValues.push(item);
+            }
+          });
+          return uniqueValues;
+        }
+
+        // Add the unique values to the permit_fqnid
+        // select element. This will allow the user
+        // to filter fqn_id.
+        function addToSelect(values) {
+          values.sort();
+          values.forEach(function(value) {
+            var option = document.createElement("option");
+            option.text = value;
+            permitIdSelect.add(option);
+          });
+
+          return setpermtisDefinitionExpression(permitIdSelectect.value);
+        }
+
+        // set the definition expression on the wells
+        // layer to reflect the selection of the user
+        function setpermitsDefinitionExpression(newValue) {
+          permitLayer.definitionExpression = "permit_fqnid = '" + newValue + "'";
+
+          if (!permitLayer.visible) {
+            permitLayer.visible = true;
+          }
+
+          return queryForpermitidGeometries();
+        }
+
+        // Get all the geometries of the wells layer
+        // the createQuery() method creates a query
+        // object that respects the definitionExpression
+        // of the layer
+        function queryForpermitidGeometries() {
+          var permitidQuery = permitLayer.createQuery();
+
+          return permitLayer.queryFeatures(permitidQuery).then(function(response) {
+            wellsGeometries = response.features.map(function(feature) {
+              return feature.geometry;
+            });
+
+            return wellsGeometries;
+          });
+        }
+
+     
+        // display the earthquake query results in the
+        // view and print the number of results to the DOM
+        function displayResults(results) {
+          resultsLayer.removeAll();
+          var features = results.features.map(function(graphic) {
+            graphic.symbol = {
+              type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+              style: "diamond",
+              size: 6.5,
+              color: "darkorange"
+            };
+            return graphic;
+          });
+          var numQuakes = features.length;
+          document.getElementById("results").innerHTML =
+            numQuakes + " earthquakes found";
+          resultsLayer.addMany(features);
+        }
+      });
+    </script>
+  </head>
+
+  <body>
+    <div id="viewDiv"></div>
+    <div id="infoDiv" class="esri-widget">
+      <div id="drop-downs">
+        Select Permit FQN_ID:
+        <select id="permit-id" class="esri-widget"></select>
+   
+      <button id="query-permitid" class="esri-widget">Query Earthquakes</button>
+      <div id="results" class="esri-widget"></div>
+    </div>
+  </body>
+</html>
