@@ -71,7 +71,7 @@
 
         
 
-        var queryQuakes = document.getElementById("query-permit");
+        var queryQuakes = document.getElementById("query-quakes");
 
         // oil and gas wells
         var permitLayer = new FeatureLayer({
@@ -207,8 +207,12 @@ url:"https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/Mapserver/13"
       <div id="drop-downs">
         Select Permit FQN_ID:
         <select id="permit-id" class="esri-widget"></select>
-   
-      <button id="query-permitid" class="esri-widget">Query Earthquakes</button>
+      </div>
+      Well buffer distance (meters):
+      <div id="distance" class="slider"></div>
+      Earthquake magnitude:
+      <div id="mag" class="slider"></div>
+      <button id="query-quakes" class="esri-widget">Query Earthquakes</button>
       <div id="results" class="esri-widget"></div>
     </div>
   </body>
