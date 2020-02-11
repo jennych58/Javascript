@@ -155,7 +155,7 @@
 
         function queryOccurrences_drop() {
           var query = occsLayer.createQuery();
-          var f = document.getElementById("permit-id");  
+          var f = document.getElementById("permit-id").value;  
         //   query.returnGeometry = true;
          //query.outFields = ["*"];
          query.where = "permit_fqnid = '" + f + "'"; 
