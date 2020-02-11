@@ -73,6 +73,7 @@
       }	
 
         var queryOccs = dom.byId("query-occs");
+	var queryDrop = dom.byId("query-drop");
 
         // occurrences
         var occsLayer = new FeatureLayer({
@@ -137,7 +138,7 @@
           var query = occsLayer.createQuery();
           var e = document.getElementById("permit_check").value;  
         //   query.returnGeometry = true;
-  //query.outFields = ["*"];
+         //query.outFields = ["*"];
          query.where = "permit_status = '" + e + "'"; 
          query.outSpatialReference = view.spatialReference;
          // query.geometry = wellBuffer;
@@ -146,6 +147,26 @@
           return occsLayer.queryFeatures(query);
         }
 
+	//on queryDrop
+       on(queryDrop, "click", function() {
+          queryOccurrences_drop()
+            .then(displayResults);
+        });
+
+        function queryOccurrences_drop() {
+          var query = occsLayer.createQuery();
+          var f = document.getElementById("drop-downs").value;  
+        //   query.returnGeometry = true;
+         //query.outFields = ["*"];
+         query.where = "permit_fqnid = '" + f + "'"; 
+         query.outSpatialReference = view.spatialReference;
+
+          return occsLayer.queryFeatures(query);
+        }	   
+	   
+	 //  
+	   
+	   
         // display the query results in the
         // view and print the number of results to the DOM
         function displayResults(results) {
@@ -168,7 +189,8 @@
           resultsLayer.addMany(features);
       }
 
-         // query all features from the occsLayer find Permit FQN_ID
+        // query all features from the occsLayer find Permit FQN_ID
+	
         view
           .when(function() {
             return occsLayer.when(function() {
