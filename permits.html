@@ -67,6 +67,8 @@
 	
 	
         var permitIdSelect = document.getElementById("permit-id");
+	var permitnameSelect = document.getElementById("permit-name");
+	var permitsegmentSelect = document.getElementById("permit-segment");
 	   
 	 var popupPermit = {
         "title": "Permit Information:",
@@ -101,7 +103,7 @@
        center:  [-122.439087 , 47.248767]
         });
 	   
-   
+       //####
 	 view
           .when(function() {
             return occsLayer.when(function() {
@@ -150,7 +152,7 @@
             permitIdSelect.add(option);
           });
 
-          return setpermtisDefinitionExpression(permitIdSelectect.value);
+          return setpermtisDefinitionExpression(permitIdSelect.value);
         }
 
  
@@ -165,7 +167,7 @@
           return queryForpermitidGeometries();
         }
 
-        // Get all the geometries of the wells layer
+        // Get all the geometries of the occsLayer layer
         // the createQuery() method creates a query
         // object that respects the definitionExpression
         // of the layer
@@ -173,31 +175,16 @@
           var permitidQuery = occsLayer.createQuery();
 
           return occsLayer.queryFeatures(permitidQuery).then(function(response) {
-            wellsGeometries = response.features.map(function(feature) {
+            permitGeometries = response.features.map(function(feature) {
               return feature.geometry;
             });
 
-            return wellsGeometries;
+            return permitGeometries;
           });
         }   
 	   
 
 
-        function queryOccurrences() {
-          var query = occsLayer.createQuery();
-          var e = document.getElementById("permit_check").value;  
-        //   query.returnGeometry = true;
-         //query.outFields = ["*"];
-         query.where = "permit_status = '" + e + "'"; 
-         query.outSpatialReference = view.spatialReference;
-         // query.geometry = wellBuffer;
-        //  query.spatialRelationship = "intersects";
-
-          return occsLayer.queryFeatures(query);
-        }
-   
-	  	   
-	   //
 	   
 	  on(permitIdSelect, "click", function() {
            querypermitid()
@@ -237,8 +224,259 @@
           console.log(features);
           resultsLayer.addMany(features);
       }   
+	 //####
 	   
-   
+     //	begin permit_name
+	 view
+          .when(function() {
+            return occsLayer.when(function() {
+              var query = occsLayer.createQuery();
+              return occsLayer.queryFeatures(query);
+            });
+          })
+          .then(getValues_name)
+          .then(getUniqueValues_name)
+          .then(addToSelect_name);
+
+        // return an array of all the values in the
+        // permit_fqnid field of the occsLayer
+        function getValues_name(response) {
+          var features = response.features;
+          var values = features.map(function(feature) {
+            return feature.attributes.permit_name;
+          });
+          return values;
+        }
+
+        // return an array of unique values in
+        // the permit_fqnid field of the occsLayer
+        function getUniqueValues_name(values) {
+          var uniqueValues = [];
+
+          values.forEach(function(item, i) {
+            if (
+              (uniqueValues.length < 1 || uniqueValues.indexOf(item) === -1) &&
+              item !== ""
+            ) {
+              uniqueValues.push(item);
+            }
+          });
+          return uniqueValues;
+        }
+
+        // Add the unique values to the permit_fqnid
+        // select element. This will allow the user
+        // to filter permit name
+        function addToSelect_name(values) {
+          values.sort();
+          values.forEach(function(value) {
+            var option = document.createElement("option");
+            option.text = value;
+            permitnameSelect.add(option);
+          });
+
+          return setpermtisDefinitionExpression_name(permitnameSelect.value);
+        }
+
+ 
+        // layer to reflect the selection of the user
+        function setpermitsDefinitionExpression_name(newValue) {
+          occsLayer.definitionExpression = "permit_name = '" + newValue + "'";
+
+          if (!occsLayer.visible) {
+            occsLayer.visible = true;
+          }
+
+          return queryForpermitidGeometries_name();
+        }
+
+        // Get all the geometries of the occsLayer layer
+        // the createQuery() method creates a query
+        // object that respects the definitionExpression
+        // of the layer
+        function queryForpermitidGeometries_name() {
+          var permitnameQuery = occsLayer.createQuery();
+
+          return occsLayer.queryFeatures(permitnameQuery).then(function(response) {
+            permitGeometries = response.features.map(function(feature) {
+              return feature.geometry;
+            });
+
+            return permitGeometries;
+          });
+        }   
+	   
+	  on(permitnameSelect, "click", function() {
+           querypermitname()
+            .then(displayResults_2);
+        });
+	 
+
+  
+
+
+        function querypermitname() {
+          var query = occsLayer.createQuery();
+          var f = document.getElementById("permit-name").value;  
+        //   query.returnGeometry = true;
+         //query.outFields = ["*"];
+         query.where = "permit_name = '" + f + "'"; 
+         query.outSpatialReference = view.spatialReference;
+         // query.geometry = wellBuffer;
+        //  query.spatialRelationship = "intersects";
+
+          return occsLayer.queryFeatures(query);
+        }
+	   
+	function displayResults_2(results) {
+          
+          console.log(results);
+
+          resultsLayer.removeAll();
+          var features = results.features.map(function(graphic) {
+            graphic.symbol = {
+              type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+              style: "diamond",
+              size: 12,
+              color: "darkorange"
+            };
+            return graphic;
+          });
+          var numOccs = features.length;
+          dom.byId("results").innerHTML = numOccs + " occurrences found";
+          console.log(features);
+          resultsLayer.addMany(features);
+      } 	   
+	   
+     // end permit_name
+	   
+	   
+     //	begin permit_segment
+	 view
+          .when(function() {
+            return occsLayer.when(function() {
+              var query = occsLayer.createQuery();
+              return occsLayer.queryFeatures(query);
+            });
+          })
+          .then(getValues_segment)
+          .then(getUniqueValues_segment)
+          .then(addToSelect_segment);
+
+        // return an array of all the values in the
+        // permit_fqnid field of the occsLayer
+        function getValues_segment(response) {
+          var features = response.features;
+          var values = features.map(function(feature) {
+            return feature.attributes.segment_fqnids;
+          });
+          return values;
+        }
+
+        // return an array of unique values in
+        // the permit_fqnid field of the occsLayer
+        function getUniqueValues_segment(values) {
+          var uniqueValues = [];
+
+          values.forEach(function(item, i) {
+            if (
+              (uniqueValues.length < 1 || uniqueValues.indexOf(item) === -1) &&
+              item !== ""
+            ) {
+              uniqueValues.push(item);
+            }
+          });
+          return uniqueValues;
+        }
+
+        // Add the unique values to the permit_fqnid
+        // select element. This will allow the user
+        // to filter segment
+        function addToSelect_segment(values) {
+          values.sort();
+          values.forEach(function(value) {
+            var option = document.createElement("option");
+            option.text = value;
+            permitsegmentSelect.add(option);
+          });
+
+          return setpermtisDefinitionExpression_segment(permitsegmentSelect.value);
+        }
+
+ 
+        // layer to reflect the selection of the user
+        function setpermitsDefinitionExpression_segment(newValue) {
+          occsLayer.definitionExpression = "segment_fqnids = '" + newValue + "'";
+
+          if (!occsLayer.visible) {
+            occsLayer.visible = true;
+          }
+
+          return queryForpermitidGeometries_segment();
+        }
+
+        // Get all the geometries of the occsLayer layer
+        // the createQuery() method creates a query
+        // object that respects the definitionExpression
+        // of the layer
+        function queryForpermitidGeometries_segment() {
+          var permitsegmentQuery = occsLayer.createQuery();
+
+          return occsLayer.queryFeatures(permitsegmentQuery).then(function(response) {
+            permitGeometries = response.features.map(function(feature) {
+              return feature.geometry;
+            });
+
+            return permitGeometries;
+          });
+        }   
+	   
+	  on(permitsegmentSelect, "click", function() {
+           querypermitsegment()
+            .then(displayResults_3);
+        });
+	 
+
+  
+
+
+        function querypermitsegment() {
+          var query = occsLayer.createQuery();
+          var f = document.getElementById("permit-segment").value;  
+        //   query.returnGeometry = true;
+         //query.outFields = ["*"];
+         query.where = "segment_fqnids = '" + f + "'"; 
+         query.outSpatialReference = view.spatialReference;
+         // query.geometry = wellBuffer;
+        //  query.spatialRelationship = "intersects";
+
+          return occsLayer.queryFeatures(query);
+        }
+	   
+	function displayResults_3(results) {
+          
+          console.log(results);
+
+          resultsLayer.removeAll();
+          var features = results.features.map(function(graphic) {
+            graphic.symbol = {
+              type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+              style: "diamond",
+              size: 12,
+              color: "darkorange"
+            };
+            return graphic;
+          });
+          var numOccs = features.length;
+          dom.byId("results").innerHTML = numOccs + " occurrences found";
+          console.log(features);
+          resultsLayer.addMany(features);
+      } 	
+	   
+     // end permit_segment   
+	   
+	   
+	   
         //view.ui.add("infoDiv", "top-right");
 
         var legend = new Legend({
@@ -285,8 +523,7 @@
         }
 
 
-	 
-	   
+
 	   
         // display the query results in the
         // view and print the number of results to the DOM
@@ -365,8 +602,8 @@
 				<div id="infoDiv align = "left">
 				<p><font size="3" align = "left"><b>Permit Status: </b></font></p>
 			
-				<select  id="permit_check" name="permit[category]" hdpp="permit_category">
-				<option value="">(Blanks)</option>
+				<select  id="permit_check" name="permit[category]" hdpp="permit_category" style='width: 200px;'>
+				<option value="Permit Status" selected="selected">(Blanks)</option>
 				<option value="Canceled">Canceled</option>
 				<option value="Entity Review">Entity Review</option>
 				<option value="In Deign/In Production">In Deign/In Production</option>
@@ -375,7 +612,7 @@
 				<option value="Permit Expired">Permit Expired</option>
 				<option value="Permit Extended">Permit Extended</option>
 				<option value="Permit in Revision">Permit in Revision</option>
-				<option value="Permit Received" selected="selected">Permit Received</option>
+				<option value="Permit Received" >Permit Received</option>
 				<option value="Permit Submitted to Entity">Permit Submitted to Entity</option>
 				<option value="Permit Submitted to MasTec">Permit Submitted to MasTec</option></select>	
 				 <button id="query-occs" align = "left">Search</button>
@@ -383,19 +620,31 @@
                                </tr>
 			      	<p>
 			      	<div id="results" style="font-size: large; color:orange; font-family: sans-serif" ></div>
+			       
 			        <tr>
 				<p><font size="3" align = "left"><b>Permit FQN_ID: </b></font></p>
-				<div id="drop-downs">
-        			<select id="permit-id" class="esri-widget">
-			        <option value="FIB:PERMIT::000000000" selected>Permit FQN_ID </option> 
-				</select>
-     					
-				<button id="query-drop" align = "left">Search</button>
-		               				      
-				<div id="results" style="font-size: large; color:red; font-family: sans-serif" ></div			      
-				</div>
+				<div id="drop-downs-permit-id">
+        			<select id="permit-id" class="esri-widget" style='width: 200px;'>
+			        <option value="FIB:PERMIT::000000000" selected>Permit FQN_ID </option> </select>
+     				</div>
 			        </tr>
 			
+			        <tr>
+				<p><font size="3" align = "left"><b>Permit Name:</b></font></p>
+				<div id="drop-downs-permit-name">
+        			<select id="permit-name" class="esri-widget" style='width: 200px;'>
+			        <option value="xxxxxx" selected>Permit Name </option> </select>
+     				</div>
+			        </tr>								     
+
+			        <tr>
+				<p><font size="3" align = "left"><b>Segment FQN_ID:</b></font></p>
+				<div id="drop-downs-permit-segment">
+        			<select id="permit-segment" class="esri-widget" style='width: 200px;'>
+									 
+			        <option value="FIB::000000000" selected>Permit Segemnt </option> </select>
+     				</div>
+			        </tr>							      
   	
  				 </div>
 				    
