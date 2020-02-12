@@ -100,7 +100,14 @@
          zoom: 13,
        center:  [-122.439087 , 47.248767]
         });
-	 view
+	   
+	 var view1 = new MapView({
+          container: "viewDiv",
+          map: map,
+         zoom: 13,
+       center:  [-122.439087 , 47.248767]
+        });   
+	 view1
           .when(function() {
             return occsLayer.when(function() {
               var query = occsLayer.createQuery();
