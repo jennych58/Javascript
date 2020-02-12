@@ -101,13 +101,8 @@
        center:  [-122.439087 , 47.248767]
         });
 	   
-	 var view1 = new MapView({
-          container: "viewDiv",
-          map: map,
-         zoom: 13,
-       center:  [-122.439087 , 47.248767]
-        });   
-	 view1
+   
+	 view
           .when(function() {
             return occsLayer.when(function() {
               var query = occsLayer.createQuery();
@@ -185,14 +180,34 @@
             return wellsGeometries;
           });
         }   
-	 
-	permitIdSelectect.addEventListener("click", function() {
-          querypermitid().then(displayResults);
+	   
+
+
+        function queryOccurrences() {
+          var query = occsLayer.createQuery();
+          var e = document.getElementById("permit_check").value;  
+        //   query.returnGeometry = true;
+         //query.outFields = ["*"];
+         query.where = "permit_status = '" + e + "'"; 
+         query.outSpatialReference = view.spatialReference;
+         // query.geometry = wellBuffer;
+        //  query.spatialRelationship = "intersects";
+
+          return occsLayer.queryFeatures(query);
+        }
+   
+	  	   
+	   //
+	   
+	  on(permitIdSelect, "click", function() {
+           querypermitid()
+            .then(displayResults);
         });
+	 
 
         function querypermitid() {
           var query = occsLayer.createQuery();
-          var f = document.getElementById("permit-id");  
+          var f = document.getElementById("permit-id").value;  
         //   query.returnGeometry = true;
          //query.outFields = ["*"];
          query.where = "permit_fqnid = '" + f + "'"; 
