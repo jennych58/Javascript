@@ -201,7 +201,7 @@
 	   
 	  on(permitIdSelect, "click", function() {
            querypermitid()
-            .then(displayResults);
+            .then(displayResults_1);
         });
 	 
 
@@ -217,6 +217,26 @@
 
           return occsLayer.queryFeatures(query);
         }
+	   
+	function displayResults_1(results) {
+          
+          console.log(results);
+
+          resultsLayer.removeAll();
+          var features = results.features.map(function(graphic) {
+            graphic.symbol = {
+              type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+              style: "diamond",
+              size: 8,
+              color: "darkored"
+            };
+            return graphic;
+          });
+          var numOccs = features.length;
+          dom.byId("results").innerHTML = numOccs + " occurrences found";
+          console.log(features);
+          resultsLayer.addMany(features);
+      }   
 	   
    
         //view.ui.add("infoDiv", "top-right");
@@ -371,7 +391,8 @@
 				</select>
      					
 				<button id="query-drop" align = "left">Search</button>
-				 <div id="results"></div>				      
+				p				      
+				<div id="results_1" style="font-size: large; color:green; font-family: sans-serif" ></div			      
 				</div>
 			        </tr>
 			
