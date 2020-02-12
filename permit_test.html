@@ -147,24 +147,8 @@
           return occsLayer.queryFeatures(query);
         }
 
-	//on queryDrop
-       on(queryDrop, "click", function() {
-          queryOccurrences_drop()
-            .then(displayResults);
-        });
 
-        function queryOccurrences_drop() {
-          var query = occsLayer.createQuery();
-          var f = document.getElementById("permit-id").value;  
-        //   query.returnGeometry = true;
-         //query.outFields = ["*"];
-         query.where = "permit_fqnid = '" + f + "'"; 
-         query.outSpatialReference = view.spatialReference;
-
-          return occsLayer.queryFeatures(query);
-        }	   
-	   
-	 //  
+	 
 	   
 	   
         // display the query results in the
@@ -190,7 +174,9 @@
       }
 
         // query all features from the occsLayer find Permit FQN_ID
-	
+       //on queryDrop
+       on(queryDrop, "click", function() {
+        
         view
           .when(function() {
             return occsLayer.when(function() {
@@ -269,7 +255,7 @@
             return wellsGeometries;
           });
         }
-	   
+       }  
       });
   </script>
 </head>
