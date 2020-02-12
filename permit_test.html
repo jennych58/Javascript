@@ -185,18 +185,6 @@
 	   
 
 
-        function queryOccurrences() {
-          var query = occsLayer.createQuery();
-          var e = document.getElementById("permit_check").value;  
-        //   query.returnGeometry = true;
-         //query.outFields = ["*"];
-         query.where = "permit_status = '" + e + "'"; 
-         query.outSpatialReference = view.spatialReference;
-         // query.geometry = wellBuffer;
-        //  query.spatialRelationship = "intersects";
-
-          return occsLayer.queryFeatures(query);
-        }
 	   
 	  on(permitIdSelect, "click", function() {
            querypermitid()
@@ -318,26 +306,14 @@
           });
         }   
 	   
-
-
-        function queryOccurrences_name() {
-          var query = occsLayer.createQuery();
-          var e = document.getElementById("permit_check").value;  
-        //   query.returnGeometry = true;
-         //query.outFields = ["*"];
-         query.where = "permit_status = '" + e + "'"; 
-         query.outSpatialReference = view.spatialReference;
-         // query.geometry = wellBuffer;
-        //  query.spatialRelationship = "intersects";
-
-          return occsLayer.queryFeatures(query);
-        }
-	   
-	  on(permitnsmrSelect, "click", function() {
+	  on(permitnameSelect, "click", function() {
            querypermitname()
             .then(displayResults_2);
         });
 	 
+
+  
+
 
         function querypermitname() {
           var query = occsLayer.createQuery();
@@ -428,8 +404,7 @@
         }
 
 
-	 
-	   
+
 	   
         // display the query results in the
         // view and print the number of results to the DOM
