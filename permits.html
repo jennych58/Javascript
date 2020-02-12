@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Permits Tracking</title>
-<link href="css/inline-list.css" rel="stylesheet" />
+ <title>Permits Tracking</title>
+ <link href="css/inline-list.css" rel="stylesheet" />
 
   <link rel="stylesheet" href="https://js.arcgis.com/4.8/esri/css/main.css">
   <script src="https://js.arcgis.com/4.8/"></script>
@@ -22,10 +22,15 @@
     #infoDiv {
       background-color: white;
       color: black;
-      padding: 6px;
-      width: 300px;
-    }
+      padding: 10px;
+      width: 400px;
+     align: left ;   
 
+    }
+     #drop-downs {
+       padding-bottom: 20px;
+    }   
+	   
     #results {
       font-weight: bolder;
     }
@@ -59,7 +64,10 @@
 
         var occsUrl =
           "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13";
-        
+	
+	
+        var permitIdSelect = document.getElementById("permit-id");
+	   
 	 var popupPermit = {
         "title": "Permit Information:",
         "content": "<b>Permit_FQNID:</b> {Permit_FQNID}<br><b>Permit_Name:</b>{Permit_Name}<br><b>Permt_Status:</b>{Permit_Status}<br><b>Segment_FQNIDs:</b>{Segment_FQNIDs}<br><b>Site Span NFIDs:</b>{NFIDs}<br><b>Actual Footage:</b>{Tracker_Actual_Footage}ft<br><b>Estimated Submitted Date to MasTec:</b>{Estimated_Sumbit_Date}<br><b>Submitted to Mastec:</b>{Submitted_to_Mastec}"
@@ -75,6 +83,8 @@
           visible: true
         });
 
+
+	   
         // GraphicsLayer for displaying results
         var resultsLayer = new GraphicsLayer();
 
@@ -92,7 +102,144 @@
         });
 	   
    
-        view.ui.add("infoDiv", "top-right");
+	 view
+          .when(function() {
+            return occsLayer.when(function() {
+              var query = occsLayer.createQuery();
+              return occsLayer.queryFeatures(query);
+            });
+          })
+          .then(getValues)
+          .then(getUniqueValues)
+          .then(addToSelect);
+
+        // return an array of all the values in the
+        // permit_fqnid field of the occsLayer
+        function getValues(response) {
+          var features = response.features;
+          var values = features.map(function(feature) {
+            return feature.attributes.permit_fqnid;
+          });
+          return values;
+        }
+
+        // return an array of unique values in
+        // the permit_fqnid field of the occsLayer
+        function getUniqueValues(values) {
+          var uniqueValues = [];
+
+          values.forEach(function(item, i) {
+            if (
+              (uniqueValues.length < 1 || uniqueValues.indexOf(item) === -1) &&
+              item !== ""
+            ) {
+              uniqueValues.push(item);
+            }
+          });
+          return uniqueValues;
+        }
+
+        // Add the unique values to the permit_fqnid
+        // select element. This will allow the user
+        // to filter fqn_id.
+        function addToSelect(values) {
+          values.sort();
+          values.forEach(function(value) {
+            var option = document.createElement("option");
+            option.text = value;
+            permitIdSelect.add(option);
+          });
+
+          return setpermtisDefinitionExpression(permitIdSelectect.value);
+        }
+
+ 
+        // layer to reflect the selection of the user
+        function setpermitsDefinitionExpression(newValue) {
+          occsLayer.definitionExpression = "permit_fqnid = '" + newValue + "'";
+
+          if (!occsLayer.visible) {
+            occsLayer.visible = true;
+          }
+
+          return queryForpermitidGeometries();
+        }
+
+        // Get all the geometries of the wells layer
+        // the createQuery() method creates a query
+        // object that respects the definitionExpression
+        // of the layer
+        function queryForpermitidGeometries() {
+          var permitidQuery = occsLayer.createQuery();
+
+          return occsLayer.queryFeatures(permitidQuery).then(function(response) {
+            wellsGeometries = response.features.map(function(feature) {
+              return feature.geometry;
+            });
+
+            return wellsGeometries;
+          });
+        }   
+	   
+
+
+        function queryOccurrences() {
+          var query = occsLayer.createQuery();
+          var e = document.getElementById("permit_check").value;  
+        //   query.returnGeometry = true;
+         //query.outFields = ["*"];
+         query.where = "permit_status = '" + e + "'"; 
+         query.outSpatialReference = view.spatialReference;
+         // query.geometry = wellBuffer;
+        //  query.spatialRelationship = "intersects";
+
+          return occsLayer.queryFeatures(query);
+        }
+   
+	  	   
+	   //
+	   
+	  on(permitIdSelect, "click", function() {
+           querypermitid()
+            .then(displayResults_1);
+        });
+	 
+
+        function querypermitid() {
+          var query = occsLayer.createQuery();
+          var f = document.getElementById("permit-id").value;  
+        //   query.returnGeometry = true;
+         //query.outFields = ["*"];
+         query.where = "permit_fqnid = '" + f + "'"; 
+         query.outSpatialReference = view.spatialReference;
+         // query.geometry = wellBuffer;
+        //  query.spatialRelationship = "intersects";
+
+          return occsLayer.queryFeatures(query);
+        }
+	   
+	function displayResults_1(results) {
+          
+          console.log(results);
+
+          resultsLayer.removeAll();
+          var features = results.features.map(function(graphic) {
+            graphic.symbol = {
+              type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+              style: "diamond",
+              size: 12,
+              color: "darkorange"
+            };
+            return graphic;
+          });
+          var numOccs = features.length;
+          dom.byId("results").innerHTML = numOccs + " occurrences found";
+          console.log(features);
+          resultsLayer.addMany(features);
+      }   
+	   
+   
+        //view.ui.add("infoDiv", "top-right");
 
         var legend = new Legend({
           view: view,
@@ -128,7 +275,7 @@
           var query = occsLayer.createQuery();
           var e = document.getElementById("permit_check").value;  
         //   query.returnGeometry = true;
-  //query.outFields = ["*"];
+         //query.outFields = ["*"];
          query.where = "permit_status = '" + e + "'"; 
          query.outSpatialReference = view.spatialReference;
          // query.geometry = wellBuffer;
@@ -137,6 +284,10 @@
           return occsLayer.queryFeatures(query);
         }
 
+
+	 
+	   
+	   
         // display the query results in the
         // view and print the number of results to the DOM
         function displayResults(results) {
@@ -157,8 +308,9 @@
           dom.byId("results").innerHTML = numOccs + " occurrences found";
           console.log(features);
           resultsLayer.addMany(features);
-        }
+      }
 
+       
       });
   </script>
 </head>
@@ -199,18 +351,20 @@
  		 </tr>
 			
 		<tr>	
-		 <td width = "15%" valign="top" >
-		</td>
+		 <td width = "15%">
+		 </td>
 			
-		 <td width = "70%" valign="top">
-	         <div id="viewDiv" style="width:1000px;height:800px;margin:2 auto;"></div>
+		 <td  width = "70%" >
+	         <div id="viewDiv" style="width:1200px;height:800px;margin:2 auto;"></div>
 				
-		</td>
-				
-		<td width = "15%" valign="top">
-		                
-				<div  id="infoDiv" align ="left">
-				Permit Status: 
+		</td>	
+		<td  align="left" width = "15%" valign = "top">
+                  <table>    
+		   
+			       <tr>
+				<div id="infoDiv align = "left">
+				<p><font size="3" align = "left"><b>Permit Status: </b></font></p>
+			
 				<select  id="permit_check" name="permit[category]" hdpp="permit_category">
 				<option value="">(Blanks)</option>
 				<option value="Canceled">Canceled</option>
@@ -224,13 +378,30 @@
 				<option value="Permit Received" selected="selected">Permit Received</option>
 				<option value="Permit Submitted to Entity">Permit Submitted to Entity</option>
 				<option value="Permit Submitted to MasTec">Permit Submitted to MasTec</option></select>	
-	
-  				 <button id="query-occs">Query</button>
-  				  <br>
-  				  <div id="results"></div>
+				 <button id="query-occs" align = "left">Search</button>
+	                        
+                               </tr>
+			      	<p>
+			      	<div id="results" style="font-size: large; color:orange; font-family: sans-serif" ></div>
+			        <tr>
+				<p><font size="3" align = "left"><b>Permit FQN_ID: </b></font></p>
+				<div id="drop-downs">
+        			<select id="permit-id" class="esri-widget">
+			        <option value="FIB:PERMIT::000000000" selected>Permit FQN_ID </option> 
+				</select>
+     					
+				<button id="query-drop" align = "left">Search</button>
+		               				      
+				<div id="results" style="font-size: large; color:red; font-family: sans-serif" ></div			      
+				</div>
+			        </tr>
+			
+  	
  				 </div>
- 		    </td>
-		    </tr>
+				    
+		    </td>
+			</table>
+		  
 		</table>  
 
   </body>
