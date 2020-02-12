@@ -100,6 +100,86 @@
          zoom: 13,
        center:  [-122.439087 , 47.248767]
         });
+	 view
+          .when(function() {
+            return occsLayer.when(function() {
+              var query = occsLayer.createQuery();
+              return occsLayer.queryFeatures(query);
+            });
+          })
+          .then(getValues)
+          .then(getUniqueValues)
+          .then(addToSelect);
+
+        // return an array of all the values in the
+        // permit_fqnid field of the occsLayer
+        function getValues(response) {
+          var features = response.features;
+          var values = features.map(function(feature) {
+            return feature.attributes.permit_fqnid;
+          });
+          return values;
+        }
+
+        // return an array of unique values in
+        // the permit_fqnid field of the occsLayer
+        function getUniqueValues(values) {
+          var uniqueValues = [];
+
+          values.forEach(function(item, i) {
+            if (
+              (uniqueValues.length < 1 || uniqueValues.indexOf(item) === -1) &&
+              item !== ""
+            ) {
+              uniqueValues.push(item);
+            }
+          });
+          return uniqueValues;
+        }
+
+        // Add the unique values to the permit_fqnid
+        // select element. This will allow the user
+        // to filter fqn_id.
+        function addToSelect(values) {
+          values.sort();
+          values.forEach(function(value) {
+            var option = document.createElement("option");
+            option.text = value;
+            permitIdSelect.add(option);
+          });
+
+          return setpermtisDefinitionExpression(permitIdSelectect.value);
+        }
+
+ 
+        // layer to reflect the selection of the user
+        function setpermitsDefinitionExpression(newValue) {
+          occsLayer.definitionExpression = "permit_fqnid = '" + newValue + "'";
+
+          if (!occsLayer.visible) {
+            occsLayer.visible = true;
+          }
+
+          return queryForpermitidGeometries();
+        }
+
+        // Get all the geometries of the wells layer
+        // the createQuery() method creates a query
+        // object that respects the definitionExpression
+        // of the layer
+        function queryForpermitidGeometries() {
+          var permitidQuery = occsLayer.createQuery();
+
+          return occsLayer.queryFeatures(permitidQuery).then(function(response) {
+            wellsGeometries = response.features.map(function(feature) {
+              return feature.geometry;
+            });
+
+            return wellsGeometries;
+          });
+        }   
+	   
+	   
 	   
    
         //view.ui.add("infoDiv", "top-right");
@@ -177,84 +257,7 @@
        //on queryDrop
 
         
-        view
-          .when(function() {
-            return occsLayer.when(function() {
-              var query = occsLayer.createQuery();
-              return occsLayer.queryFeatures(query);
-            });
-          })
-          .then(getValues)
-          .then(getUniqueValues)
-          .then(addToSelect);
-
-        // return an array of all the values in the
-        // permit_fqnid field of the occsLayer
-        function getValues(response) {
-          var features = response.features;
-          var values = features.map(function(feature) {
-            return feature.attributes.permit_fqnid;
-          });
-          return values;
-        }
-
-        // return an array of unique values in
-        // the permit_fqnid field of the occsLayer
-        function getUniqueValues(values) {
-          var uniqueValues = [];
-
-          values.forEach(function(item, i) {
-            if (
-              (uniqueValues.length < 1 || uniqueValues.indexOf(item) === -1) &&
-              item !== ""
-            ) {
-              uniqueValues.push(item);
-            }
-          });
-          return uniqueValues;
-        }
-
-        // Add the unique values to the permit_fqnid
-        // select element. This will allow the user
-        // to filter fqn_id.
-        function addToSelect(values) {
-          values.sort();
-          values.forEach(function(value) {
-            var option = document.createElement("option");
-            option.text = value;
-            permitIdSelect.add(option);
-          });
-
-          return setpermtisDefinitionExpression(permitIdSelectect.value);
-        }
-
- 
-        // layer to reflect the selection of the user
-        function setpermitsDefinitionExpression(newValue) {
-          occsLayer.definitionExpression = "permit_fqnid = '" + newValue + "'";
-
-          if (!occsLayer.visible) {
-            occsLayer.visible = true;
-          }
-
-          return queryForpermitidGeometries();
-        }
-
-        // Get all the geometries of the wells layer
-        // the createQuery() method creates a query
-        // object that respects the definitionExpression
-        // of the layer
-        function queryForpermitidGeometries() {
-          var permitidQuery = occsLayer.createQuery();
-
-          return occsLayer.queryFeatures(permitidQuery).then(function(response) {
-            wellsGeometries = response.features.map(function(feature) {
-              return feature.geometry;
-            });
-
-            return wellsGeometries;
-          });
-        }
+       
        
       });
   </script>
