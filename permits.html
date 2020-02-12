@@ -547,7 +547,13 @@
           resultsLayer.addMany(features);
       }
 
-       
+ function changeColor(colorParam) {
+    let color = colorParam.value.toLowerCase();
+    var optionElement = document.getElementById(color);
+    optionElement.style.color = color;
+} 
+	   
+	   
       });
   </script>
 </head>
@@ -602,7 +608,7 @@
 				<div id="infoDiv align = "left">
 				<p><font size="3" align = "left"><b>Permit Status: </b></font></p>
 			
-				<select  id="permit_check" name="permit[category]" hdpp="permit_category" style='width: 200px;'>
+				<select  id="permit_check" name="permit[category]" hdpp="permit_category" style='width: 200px;' onchange="changeColor(this);" class="color" id="rgb">
 				<option value="Permit Status" selected="selected">(Blanks)</option>
 				<option value="Canceled">Canceled</option>
 				<option value="Entity Review">Entity Review</option>
@@ -624,7 +630,7 @@
 			        <tr>
 				<p><font size="3" align = "left"><b>Permit FQN_ID: </b></font></p>
 				<div id="drop-downs-permit-id">
-        			<select id="permit-id" class="esri-widget" style='width: 200px;'>
+        			<select id="permit-id" class="esri-widget" style='width: 200px;' onchange="changeColor(this);" class="color" id="rgb">
 			        <option value="FIB:PERMIT::000000000" selected>Permit FQN_ID </option> </select>
      				</div>
 			        </tr>
@@ -632,7 +638,7 @@
 			        <tr>
 				<p><font size="3" align = "left"><b>Permit Name:</b></font></p>
 				<div id="drop-downs-permit-name">
-        			<select id="permit-name" class="esri-widget" style='width: 200px;'>
+        			<select id="permit-name" class="esri-widget" style='width: 200px;' onchange="changeColor(this);" class="color" id="rgb">
 			        <option value="xxxxxx" selected>Permit Name </option> </select>
      				</div>
 			        </tr>								     
@@ -640,7 +646,7 @@
 			        <tr>
 				<p><font size="3" align = "left"><b>Segment FQN_ID:</b></font></p>
 				<div id="drop-downs-permit-segment">
-        			<select id="permit-segment" class="esri-widget" style='width: 200px;'>
+        			<select id="permit-segment" class="esri-widget" style='width: 200px;' onchange="changeColor(this);" class="color" id="rgb">
 									 
 			        <option value="FIB::000000000" selected>Permit Segemnt </option> </select>
      				</div>
