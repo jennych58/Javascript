@@ -406,7 +406,7 @@
  
         // layer to reflect the selection of the user
         function setpermitsDefinitionExpression_segment(newValue) {
-          occsLayer.definitionExpression = "permit_segment = '" + newValue + "'";
+          occsLayer.definitionExpression = "Segment_FQNIDs = '" + newValue + "'";
 
           if (!occsLayer.visible) {
             occsLayer.visible = true;
@@ -445,7 +445,7 @@
           var f = document.getElementById("permit-segment").value;  
         //   query.returnGeometry = true;
          //query.outFields = ["*"];
-         query.where = "permit_segment = '" + f + "'"; 
+         query.where = "Segment_FQNIDs = '" + f + "'"; 
          query.outSpatialReference = view.spatialReference;
          // query.geometry = wellBuffer;
         //  query.spatialRelationship = "intersects";
