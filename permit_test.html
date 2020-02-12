@@ -368,7 +368,7 @@
         function getValues_segment(response) {
           var features = response.features;
           var values = features.map(function(feature) {
-            return feature.attributes.permit_name;
+            return feature.attributes.Segment_FQNIDs;
           });
           return values;
         }
