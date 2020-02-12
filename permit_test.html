@@ -165,7 +165,7 @@
           return queryForpermitidGeometries();
         }
 
-        // Get all the geometries of the wells layer
+        // Get all the geometries of the occsLayer layer
         // the createQuery() method creates a query
         // object that respects the definitionExpression
         // of the layer
@@ -173,11 +173,11 @@
           var permitidQuery = occsLayer.createQuery();
 
           return occsLayer.queryFeatures(permitidQuery).then(function(response) {
-            wellsGeometries = response.features.map(function(feature) {
+            permitGeometries = response.features.map(function(feature) {
               return feature.geometry;
             });
 
-            return wellsGeometries;
+            return permitGeometries;
           });
         }   
 	   
@@ -384,15 +384,16 @@
 			      	<p>
 			      	<div id="results" style="font-size: large; color:orange; font-family: sans-serif" ></div>
 			        <tr>
+														 
+				//query Permit FQN_ID										 
 				<p><font size="3" align = "left"><b>Permit FQN_ID: </b></font></p>
 				<div id="drop-downs">
         			<select id="permit-id" class="esri-widget">
 			        <option value="FIB:PERMIT::000000000" selected>Permit FQN_ID </option> 
 				</select>
      					
-				<button id="query-drop" align = "left">Search</button>
-		               				      
-				<div id="results" style="font-size: large; color:red; font-family: sans-serif" ></div			      
+				//<button id="query-drop" align = "left">Search</button>
+		                <div id="results" style="font-size: large; color:red; font-family: sans-serif" ></div>			      
 				</div>
 			        </tr>
 			
