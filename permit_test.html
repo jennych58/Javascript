@@ -368,7 +368,7 @@
         function getValues_segment(response) {
           var features = response.features;
           var values = features.map(function(feature) {
-            return feature.attributes.Segment_FQNIDs;
+            return feature.attributes.segment_fqnids;
           });
           return values;
         }
@@ -406,7 +406,7 @@
  
         // layer to reflect the selection of the user
         function setpermitsDefinitionExpression_segment(newValue) {
-          occsLayer.definitionExpression = "Segment_FQNIDs = '" + newValue + "'";
+          occsLayer.definitionExpression = "segment_fqnids = '" + newValue + "'";
 
           if (!occsLayer.visible) {
             occsLayer.visible = true;
@@ -432,7 +432,7 @@
         }   
 	   
 	  on(permitsegmentSelect, "click", function() {
-           querypermitname()
+           querypermitsegment()
             .then(displayResults_3);
         });
 	 
@@ -445,7 +445,7 @@
           var f = document.getElementById("permit-segment").value;  
         //   query.returnGeometry = true;
          //query.outFields = ["*"];
-         query.where = "Segment_FQNIDs = '" + f + "'"; 
+         query.where = "segment_fqnids = '" + f + "'"; 
          query.outSpatialReference = view.spatialReference;
          // query.geometry = wellBuffer;
         //  query.spatialRelationship = "intersects";
