@@ -42,7 +42,7 @@
   </style>
 
 <script>	
-    var layer, map1, visible = [];
+    var layer, map, visible = [];
 
    require([
         "esri/Map",
@@ -72,7 +72,7 @@
         Graphic, Legend,
 	Compass,ScaleBar,
         on, dom, domConstruct,
-	 query, arrayUtils
+	query, arrayUtils
 	 
       ) {
 
@@ -104,14 +104,14 @@
         // GraphicsLayer for displaying results
         var resultsLayer = new GraphicsLayer();
 
-        var map = new Map({
+           map = new Map({
           basemap: "topo-vector",
           //layers: [wellsLayer, quakesLayer, resultsLayer]
           layers: [occsLayer,resultsLayer]
         });
 
 	 //add reference layers  
-	 map1 = new Map("map");
+
 	layer = new ArcGISDynamicMapServiceLayer("https://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Specialty/ESRI_StatesCitiesRivers_USA/MapServer");
         
         layer.on("load", buildLayerList);
@@ -709,7 +709,6 @@
       });
     </script>	
 	
-	//
 	
 </head>
 
