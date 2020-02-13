@@ -24,7 +24,7 @@
       color: black;
       padding: 10px;
       width: 400px;
-      align: left ;   
+     align: left ;   
 
     }
      #drop-downs {
@@ -34,26 +34,6 @@
     #results {
       font-weight: bolder;
     }
-	   
-
-	   
-.bg-img {
-  /* The image used */
-  background-image: url("images/banner1.jpg");
-  min-width: 800px;
-  min-height: 100px;
-
-  /* Center and scale the image nicely */
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-
-  /* Needed to position the navbar */
-  position: relative;
-}
-
-
-
   </style>
 
 <script>	
@@ -70,10 +50,7 @@
         "dojo/on",
         "dojo/dom",
         "dojo/dom-construct",
-        "dojo/domReady!",
-	 "esri/layers/ArcGISDynamicMapServiceLayer",
-        "dojo/query", "dojo/_base/array"
-        
+        "dojo/domReady!"
       ],
       function(
         Map, MapView,
@@ -579,58 +556,6 @@
 	   
       });
   </script>
-
-   <script>
-      var layer, map, visible = [];
-
-      require([
-        "esri/map", "esri/layers/ArcGISDynamicMapServiceLayer",
-        "dojo/dom", "dojo/on", "dojo/query", "dojo/_base/array",
-        "dojo/domReady!"
-      ], function(
-        Map, ArcGISDynamicMapServiceLayer,
-        dom, on, query, arrayUtils
-      ) {
-        map = new Map("map");
-        layer = new ArcGISDynamicMapServiceLayer("https://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Specialty/ESRI_StatesCitiesRivers_USA/MapServer");
-        // layer = new ArcGISDynamicMapServiceLayer("https://sampleserver6.arcgisonline.com/arcgis/rest/services/WorldTimeZones/MapServer");
-
-        layer.on("load", buildLayerList);
-        map.addLayer(layer);
-
-        function buildLayerList() {
-          var items = arrayUtils.map(layer.layerInfos, function(info, index) {
-            if (info.defaultVisibility) {
-              visible.push(info.id);
-            }
-            return "<input type='checkbox' class='list_item'" + (info.defaultVisibility ? "checked=checked" : "") + "' id='" + info.id + "'' /><label for='" + info.id + "'>" + info.name + "</label>";
-          });
-          var ll = dom.byId("layer_list");
-          ll.innerHTML = items.join(' ');
-          layer.setVisibleLayers(visible);
-          on(ll, "click", updateLayerVisibility);
-        }
-
-        function updateLayerVisibility() {
-          var inputs = query(".list_item");
-          var input;
-          visible = [];
-
-          arrayUtils.forEach(inputs, function(input) {
-            if (input.checked) {
-              visible.push(input.id);
-            }
-          });
-          //if there aren't any layers visible set the array to be -1
-          if (visible.length === 0) {
-            visible.push(-1);
-          }
-          layer.setVisibleLayers(visible);
-        }
-      });
-    </script>	
-	
- 
 </head>
 
 
