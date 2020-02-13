@@ -3,7 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
- <title>Permits Tracking</title>
+ <title>Permits Tracking</title>    
+<link rel="stylesheet" href="https://js.arcgis.com/3.31/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.31/esri/css/esri.css">
+ 
+    <script src="https://js.arcgis.com/3.31/"></script>
+
  <link href="css/inline-list.css" rel="stylesheet" />
 
   <link rel="stylesheet" href="https://js.arcgis.com/4.8/esri/css/main.css">
@@ -37,6 +42,8 @@
   </style>
 
 <script>	
+    var layer, map1, visible = [];
+
    require([
         "esri/Map",
         "esri/views/MapView",
@@ -104,10 +111,11 @@
         });
 
 	 //add reference layers  
+	 map1 = new Map("map");
 	layer = new ArcGISDynamicMapServiceLayer("https://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Specialty/ESRI_StatesCitiesRivers_USA/MapServer");
         
         layer.on("load", buildLayerList);
-        map.addLayer(layer);   
+        map1.addLayer(layer);   
 	   
 	function buildLayerList() {
           var items = arrayUtils.map(layer.layerInfos, function(info, index) {
@@ -138,7 +146,7 @@
           }
           layer.setVisibleLayers(visible);
         }
-	///
+
 	   
         var view = new MapView({
           container: "viewDiv",
