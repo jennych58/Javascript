@@ -39,7 +39,7 @@
 				"esri/layers/MapImageLayer",
 				"esri/widgets/Legend"
 			], function(Map, MapView, Request, MapLayer, FeatureLayer, Legend) {
-				generateBasemaps();
+				//generateBasemaps();
 				layer = new FeatureLayer({
 					url:
 						"https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
@@ -48,7 +48,8 @@
 				});
 
 				map = new Map({
-					basemap: "streets",
+					//basemap: "streets",
+					basemap: generateBasemaps(),
 					layers: [layer]
 				});
 
