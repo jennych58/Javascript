@@ -18,7 +18,7 @@
         "esri/widgets/Compass",	      
 	 "esri/widgets/ScaleBar"
       ], function(Map, Graphic, MapView, FeatureLayer, ScaleBar,Compass,Legend) {
-        // Crime in SF
+   
         var layer = new FeatureLayer({
                url: "https://arcgis.sefnco.com/arcgis/rest/services/Permits_joined/FeatureServer/13",
           
@@ -26,7 +26,7 @@
         });
 
         var map = new Map({
-          basemap: "topo-vector",
+          basemap: generateBasemaps,
           layers: [layer]
         });
 
